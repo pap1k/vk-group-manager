@@ -1,7 +1,7 @@
 import requests
 from random import randint as rand
 
-CORE_V = 0.2
+CORE_V = 0.3
 
 API_URL = "https://api.vk.com/method/"
 API_V = 5.103
