@@ -20,7 +20,7 @@ def findModer(moders, id):
 class main:
     triggers = ['daycount']
     
-    def count(self, vk : VK, peer):
+    def count(self, vk : VK, peer, test = False):
         moders = db.execute("SELECT * FROM moders").fetchall()
         vac = [id[0] for id in db.execute("SELECT vk_id FROM vacation").fetchall()]
         moders_days = {}
@@ -70,14 +70,17 @@ class main:
         for moder in moders_days:
             if moder not in creators and moder not in vac:
                 moders_days[moder] += 1
-                db.execute(f"UPDATE moders SET days_without_posts = {moders_days[moder]} WHERE vk_id = {moder}")
+                if not test:
+                    db.execute(f"UPDATE moders SET days_without_posts = {moders_days[moder]} WHERE vk_id = {moder}")
             else:
                 moders_days[moder] = 0
-                db.execute(f"UPDATE moders SET days_without_posts = 0 WHERE vk_id = {moder}")
+                if not test:
+                    db.execute(f"UPDATE moders SET days_without_posts = 0 WHERE vk_id = {moder}")
 
         for creator in creators:
-            db.execute("INSERT OR IGNORE INTO counter(vk_id) VALUES(?)", (creator,))
-            db.execute("UPDATE counter SET posts = posts + "+str(creators[creator])+" WHERE vk_id = ?", (creator,))
+            if not test:
+                db.execute("INSERT OR IGNORE INTO counter(vk_id) VALUES(?)", (creator,))
+                db.execute("UPDATE counter SET posts = posts + "+str(creators[creator])+" WHERE vk_id = ?", (creator,))
         con.commit()
         
         #TODO Вывести в чат всю хуйню
@@ -134,7 +137,10 @@ class main:
     def execute(self, vk : VK, peer, **mess):
         userinfo = db.execute("SELECT * FROM admins WHERE vk_id = ?", (mess['from_id'],))
         if len(userinfo.fetchall()) == 1:
-            self.count(vk, config.PEER_ADD_NUM + config.CONVERSATIONS['new'])
+            if len(mess['text'].split(' ')) > 1 and mess['text'].split(' ')[1] == "test":
+                self.count(vk, config.PEER_ADD_NUM + config.CONVERSATIONS['flood'], True)
+            else:
+                self.count(vk, config.PEER_ADD_NUM + config.CONVERSATIONS['new'])
         else:
             vk.api("messages.send", peer_id=peer, reply_to=mess['id'], message="[BOT]\nВы не можете использовать эту команду")
 
