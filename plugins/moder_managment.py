@@ -17,12 +17,14 @@ class main:
             name = vk.api("users.get", user_ids=mess['userId'])[0]
 
             managers = vk.api("groups.getMembers", group_id=config.GROUP_ID, filter='managers')
-            isModer = False
+            found = False
+            
             for manager in managers['items']:
                 if manager['id'] == mess['userId'] and manager['role'] == 'editor': #блок снятия других админов админами через бота, только вручную
-                    isModer = True
+                    found = True
                     break
 
+            isModer = found
             #Назначение модером
             if mess['cmd'] == "addmoder":
                 if len(data) == 0:
