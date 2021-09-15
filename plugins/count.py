@@ -128,11 +128,6 @@ class main:
         result += "╚══════════════════"
 
         vk.api("messages.send", peer_id=peer, message=result)
-        m = "ПОлучается что что никто ничего не постил все сняты пиздец"
-
-        vk.api("messages.send", peer_id=peer, message=m)
-                
-
 
     def execute(self, vk : VK, peer, **mess):
         userinfo = db.execute("SELECT * FROM admins WHERE vk_id = ?", (mess['from_id'],))
