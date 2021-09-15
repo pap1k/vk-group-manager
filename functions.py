@@ -25,8 +25,9 @@ def getUserIdFromMentor(txt):
 def newMessageEventHandler(obj):
     if 'message' in obj:
         message = obj['message']
-        if message['peer_id'] != config.PEER_ADD_NUM+config.CONV_TO_LISTEN and config.CONV_TO_LISTEN != 0:
-            return None
+        if message['peer_id'] != config.PEER_ADD_NUM+config.CONV_TO_LISTEN:
+            if config.CONV_TO_LISTEN != 0:
+                return None
         if not message['text'].startswith(config.CMD_SYMBOL):
             return None
 

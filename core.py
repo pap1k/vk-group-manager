@@ -105,7 +105,6 @@ class LongPoll:
                     for listener in self.listeners:
                         event = upd['type'] if self.mode == "group" else userToGroupEvent(upd[0])
                         if listener[0] == event:
-                            print("Found event "+listener[0]+", txt: ", upd[6])
                             if self.mode == "user":
                                 #КОСТЫЛЬ ТОЛЬКО НА СООБЩЕНИЯ КОТОРЫЕ ЧЕРЕЗ ЮЗЕР ЛОНГПОЛЛ
                                 mess = self.vkInstanse.api("messages.getById", message_ids=upd[1])['items'][0]
