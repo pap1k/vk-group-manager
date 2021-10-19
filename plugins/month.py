@@ -1,7 +1,5 @@
 from core import VK
-from plugins.db import cursor as db, con
-import config, sys
-
+from plugins.db import cursor as db
 
 class main:
     triggers = ['mounth', 'monstat']
