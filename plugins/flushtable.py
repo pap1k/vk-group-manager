@@ -1,0 +1,26 @@
+from core import VK
+import json, os
+from datetime import date
+from plugins.db import cursor as db
+
+class main:
+    triggers = ['flush', 'cleartable']
+
+    def execute(self, vk : VK, peer, **mess):
+        userinfo = db.execute("SELECT * FROM admins WHERE vk_id = ?", (mess['from_id'],))
+        if len(userinfo.fetchall()) == 1:
+            data = db.execute("SELECT * FROM counter")
+            savedata = {}
+            for one in data:
+                savedata[one[0]] = one[1]
+            filename = "count_"+date.today().strftime("%d-%m-%Y")+".json"
+            if not os.path.exists("backups/"):
+                os.mkdir("backups/")
+            open("backups/"+filename, "w").write(json.dumps(savedata))
+
+            #db.execute("DELETE FROM counter")
+
+            vk.api("messages.send", peer_id=peer, reply_to=mess['id'], message="Таблица статистики очещена")
+
+        else:
+            vk.api("messages.send", peer_id=peer, reply_to=mess['id'], message="[BOT]\nВы не можете использовать эту команду")
