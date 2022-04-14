@@ -44,6 +44,4 @@ def newMessageEventHandler(obj):
                         return None
                     plugin.main().execute(vk, peer = message['peer_id'], userId = userId, cmd = cmd, **message)
                     # threading.Thread(target=plug.execute,args=(cmd, userId)).start()
-                        
-
         

@@ -1,12 +1,3 @@
-#Global
-Open config.py, set your own settings. For start you need to set only access token. Another constants are not nessasary for working.
-Also you can set peer_id of conversation you need to bot listen.
-You can use bot (group) or user access token. Using user AT allows work only with new_message event.
-There are event handler in functions.py. You can change it. Not recommended to change something in core.py - it is a core allows application work with vk api.
-#Now app can
-For using api method inside your plugins you need to get in as parameter in execute method of class main in the each plugin.
-Now usage are:
-##
 Полностью переработана логика и переписана с нуля. Теперь у бота есть база данных (раньше использовался обычный текстовый файл). Теперь модер и ивент модер не являются разными сущностями. Ивент - это обычный модер с дополнительным флагом. Написано адекватное ядро для работы с сервером вк и перехвата событий. Код по идее должен быть расширяемым.
 Команды для работы:
 /init - При запуске в спец режиме позволяет создать необходимые для работы таблицы и тд. Для использования запустить с флагом -init

@@ -2,6 +2,7 @@ from core import VK
 import json, os
 from datetime import date
 from plugins.db import cursor as db
+from plugins.db import con
 
 class main:
     triggers = ['flush', 'cleartable']
@@ -18,7 +19,8 @@ class main:
                 os.mkdir("backups/")
             open("backups/"+filename, "w").write(json.dumps(savedata))
 
-            #db.execute("DELETE FROM counter")
+            db.execute("DELETE FROM counter")
+            con.commit()
 
             vk.api("messages.send", peer_id=peer, reply_to=mess['id'], message="Таблица статистики очещена")
 
