@@ -19,7 +19,7 @@ class main:
                 reporttext = "Список отчетов модера:\n"
                 spent = 0
                 for row in eventinfo:
-                    reporttext += f"[{row[0]}]{row[4]} -- {row[2]} -> {row[3]}\n"
+                    reporttext += f"[{row[0]}]{row[4]} -- {row[2]} -> {row[3]}\n{row[5]}\n"
                     spent += row[2]#prize
                 reporttext += f"\nВсего потрачено: {spent}\nВсего отчетов: {len(eventinfo)}"
                 vk.api("messages.send", peer_id=peer, reply_to=mess['id'], message="[BOT]\n"+reporttext)
