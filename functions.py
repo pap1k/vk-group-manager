@@ -31,7 +31,7 @@ def newMessageEventHandler(obj):
         if not message['text'].startswith(config.CMD_SYMBOL):
             return None
 
-        cmd = message['text'].lower().split(' ')[0].replace(config.CMD_SYMBOL, '')
+        cmd = message['text'].lower().replace('\n', ' ').split(' ')[0].replace(config.CMD_SYMBOL, '')
         userId = None
         if len(message['text'].split(' ')) >= 2:
             userId = getUserIdFromMentor(message['text'].split(' ')[1])

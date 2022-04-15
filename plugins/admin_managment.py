@@ -8,7 +8,7 @@ class main:
     target = True
     def execute(self, vk : VK, peer : int, **mess):
 
-        if "-init" in sys.argv:
+        if "-dev" in sys.argv:
             db.execute("CREATE TABLE IF NOT EXISTS admins (vk_id INT NOT NULL)")
 
             data = db.execute("SELECT * FROM admins WHERE vk_id = ?", (mess['userId'],))
