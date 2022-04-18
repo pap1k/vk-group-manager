@@ -21,6 +21,7 @@ class main:
     triggers = ['daycount']
     
     def count(self, vk : VK, peer, test = False):
+        '''Подсчёт'''
         moders = db.execute("SELECT * FROM moders").fetchall()
         vac = [id[0] for id in db.execute("SELECT vk_id FROM vacation").fetchall()]
         moders_days = {}
@@ -84,7 +85,7 @@ class main:
         con.commit()
         
         #TODO Вывести в чат всю хуйню
-        result = "╔══════"+date(time.time(), "%d.%m.%Y")+"══════\n"
+        result = "╔══════"+date(time.time()-500, "%d.%m.%Y")+"══════\n"
         result += f"║ > Всего опубликовано постов [{count}]:\n"
         result +=  "║*********************************\n"
 

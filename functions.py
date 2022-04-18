@@ -1,9 +1,11 @@
-from core import VK
+from core import VK, getStrTime
 import config, importlib, os, re
 
 vk = VK(config.TOKEN)
 
 plugins = []
+
+
 
 def loadCommands():
     for file in os.listdir('plugins'):
@@ -11,8 +13,8 @@ def loadCommands():
             plugin = importlib.import_module('plugins.'+file.replace('.py',''))
             if hasattr(plugin.main, "triggers"):
                 plugins.append(plugin)
-                print("Загружен плагин "+file.replace('.py',''))
-            else: print("Ошибка загрузки плагина "+file.replace('.py','')+" - отсутствует атрибут triggers")
+                print(f"{getStrTime()} Загружен плагин "+file.replace('.py',''))
+            else: print(f"{getStrTime()} Ошибка загрузки плагина "+file.replace('.py','')+" - отсутствует атрибут triggers")
 
 loadCommands()
 
@@ -39,6 +41,7 @@ def newMessageEventHandler(obj):
         for plugin in plugins:
             for trigger in plugin.main.triggers:
                 if cmd == trigger:
+                    print(f'{getStrTime()} Словлена команда: {message["text"].lower() }')
                     if hasattr(plugin.main, 'target') and not userId:
                         vk.api("messages.send", peer_id=message['peer_id'], message='Ошибка: Не указан пользователь (Указывать через @)', reply_to=message['id'])
                         return None
