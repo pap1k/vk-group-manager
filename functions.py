@@ -27,13 +27,18 @@ def getUserIdFromMentor(txt):
 def newMessageEventHandler(obj):
     if 'message' in obj:
         message = obj['message']
-        if message['peer_id'] != config.PEER_ADD_NUM+config.CONV_TO_LISTEN:
-            if config.CONV_TO_LISTEN != 0:
-                return None
+        if type(config.CONV_TO_LISTEN) == list:
+            if message['peer_id'] not in [c+config.PEER_ADD_NUM for c in config.CONV_TO_LISTEN]:
+                if config.CONV_TO_LISTEN != []:
+                    return None
+        else:
+            if message['peer_id'] != config.PEER_ADD_NUM+config.CONV_TO_LISTEN:
+                if config.CONV_TO_LISTEN != 0:
+                    return None
         if not message['text'].startswith(config.CMD_SYMBOL):
             return None
 
-        cmd = message['text'].lower().split(' ')[0].replace(config.CMD_SYMBOL, '')
+        cmd = message['text'].lower().replace('\n', ' ').split(' ')[0].replace(config.CMD_SYMBOL, '')
         userId = None
         if len(message['text'].split(' ')) >= 2:
             userId = getUserIdFromMentor(message['text'].split(' ')[1])
@@ -47,6 +52,4 @@ def newMessageEventHandler(obj):
                         return None
                     plugin.main().execute(vk, peer = message['peer_id'], userId = userId, cmd = cmd, **message)
                     # threading.Thread(target=plug.execute,args=(cmd, userId)).start()
-                        
-
         
