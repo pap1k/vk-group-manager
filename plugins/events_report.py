@@ -29,6 +29,8 @@ class main:
                     'sum': int(msgdata[1]),
                     'winner': msgdata[2]
                 }
+                if report_data['sum'] <= 0:
+                    return self.reply("Сумма не может быть <= 0")
 
                 if report_data['sum'] > userinfo[0][3]:
                     return self.reply(f"По данным бота у остаток ваших средств - {userinfo[0][3]}, а вы хотите сдать отчет с суммой {report_data['sum']}. Если это ошибка, обратитесь к админам группы.")
@@ -54,4 +56,4 @@ class main:
             self.reply("Вы не можете использовать эту команду")
 
     def reply(self, text):
-        self.vkInstanse.api("messages.send", peer_id=self.peer, reply_to=self.mess['id'], message="[BOT]\n"+text)
+        return self.vkInstanse.api("messages.send", peer_id=self.peer, reply_to=self.mess['id'], message="[BOT]\n"+text)
