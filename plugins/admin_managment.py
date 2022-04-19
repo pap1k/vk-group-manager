@@ -4,7 +4,7 @@ from plugins.db import cursor as db, con
 
 
 class main:
-    triggers = ['addadmin', 'deleteadmin']
+    triggers = [['addadmin', 'Привелегирует пользователя админ правами в боте'], ['deleteadmin', 'Отбирает права адина у пользователя в боте']]
     target = True
     def execute(self, vk : VK, peer : int, **mess):
 

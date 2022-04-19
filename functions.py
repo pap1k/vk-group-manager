@@ -45,9 +45,16 @@ def newMessageEventHandler(obj):
 
         for plugin in plugins:
             for trigger in plugin.main.triggers:
-                if cmd == trigger:
+                
+                cond = cmd == trigger
+                if type(trigger) == list:
+                    cond = cmd == trigger[0]
+                if cond:
                     print(f'{getStrTime()} Словлена команда: {message["text"].lower() }')
-                    if hasattr(plugin.main, 'target') and not userId:
+                    if cmd == "cmdlist":
+                        plugin.main().execute(vk, peer = message['peer_id'], plist = plugins, cmd = cmd, **message)
+                        return None
+                    elif hasattr(plugin.main, 'target') and not userId:
                         vk.api("messages.send", peer_id=message['peer_id'], message='Ошибка: Не указан пользователь (Указывать через @)', reply_to=message['id'])
                         return None
                     plugin.main().execute(vk, peer = message['peer_id'], userId = userId, cmd = cmd, **message)

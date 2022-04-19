@@ -8,7 +8,7 @@ def date(unixtime, format = '%d.%m.%Y %H:%M:%S'):
     return d.strftime(format)
 
 class main:
-    triggers = [['estat', 'Показывает подробную статистику отчетов ивент модера на текущий момент'], ['eventstat', 'Аналог']]
+    triggers = [['emoney', 'Показывает сколько осталось денег у указанного инвента'], ['getemoney', "Аналог"]]
     target = True
 
     def execute(self, vk : VK, peer, userId, **mess):

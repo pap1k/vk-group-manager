@@ -8,7 +8,7 @@ def date(unixtime, format = '%d.%m.%Y %H:%M:%S'):
     return d.strftime(format)
 
 class main:
-    triggers = ['report']
+    triggers = [['report', 'Ивент модеры с помощью нее оставляют отчеты']]
     vkInstanse : VK
     peer = 0
     mess = {}

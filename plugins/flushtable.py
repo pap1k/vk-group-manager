@@ -5,7 +5,7 @@ from plugins.db import cursor as db
 from plugins.db import con
 
 class main:
-    triggers = ['flush', 'cleartable']
+    triggers = [['flush', '[ОПАСНО]Сбрасывает статистику работы модеров'], ['cleartable', '[ОПАСНО]Аналог']]
 
     def execute(self, vk : VK, peer, **mess):
         userinfo = db.execute("SELECT * FROM admins WHERE vk_id = ?", (mess['from_id'],))

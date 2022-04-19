@@ -2,7 +2,7 @@ from core import VK
 from plugins.db import cursor as db
 
 class main:
-    triggers = ['mounth', 'monstat']
+    triggers = [['mounth', 'Формирует ответ по работе модеров с момента последенй чистки через /flush'], ['monstat', 'Аналог']]
 
     def execute(self, vk : VK, peer, **mess):
         userinfo = db.execute("SELECT * FROM admins WHERE vk_id = ?", (mess['from_id'],))
