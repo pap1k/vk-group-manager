@@ -29,6 +29,12 @@ class main:
                     'sum': int(msgdata[1]),
                     'winner': msgdata[2]
                 }
+                if report_data['sum'] <= 0:
+                    return self.reply("Сумма не может быть <= 0")
+
+                if report_data['sum'] > userinfo[0][3]:
+                    return self.reply(f"По данным бота у остаток ваших средств - {userinfo[0][3]}, а вы хотите сдать отчет с суммой {report_data['sum']}. Если это ошибка, обратитесь к админам группы.")
+
                 #Получаем ссылку на фотку
                 attach = mess['attachments'][0]
                 maximum = [0,0]
@@ -40,7 +46,8 @@ class main:
                 report_data['photo'] = attach['photo']['sizes'][maximum[1]]['url']
                 
                 db.execute("INSERT INTO reports(vk_id, prize, winner, date_of_report, photo_url) VALUES(?, ?, ?, ?, ?)", (mess['from_id'], report_data['sum'], report_data['winner'], date(time.time()), report_data['photo']))
-                self.reply("Отчет сохранен: {}, {}, {}".format(report_data['sum'], report_data['winner'], date(time.time())))
+                db.execute("UPDATE moders SET money_left = ?", (userinfo[0][3]-report_data['sum'], ))
+                self.reply("Отчет сохранен: ${}, {}, {}\nОстаток средств: {}".format(report_data['sum'], report_data['winner'], date(time.time()), userinfo[0][3]-report_data['sum']))
                 con.commit()
 
             else:
@@ -49,4 +56,4 @@ class main:
             self.reply("Вы не можете использовать эту команду")
 
     def reply(self, text):
-        self.vkInstanse.api("messages.send", peer_id=self.peer, reply_to=self.mess['id'], message="[BOT]\n"+text)
+        return self.vkInstanse.api("messages.send", peer_id=self.peer, reply_to=self.mess['id'], message="[BOT]\n"+text)
