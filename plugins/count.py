@@ -18,7 +18,7 @@ def findModer(moders, id):
     return None
 
 class main:
-    triggers = ['daycount']
+    triggers = [['daycount', 'Позволяет запустить подсчет, в случае, если автоматический не сработал']]
     
     def count(self, vk : VK, peer, test = False):
         moders = db.execute("SELECT * FROM moders").fetchall()

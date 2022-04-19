@@ -3,7 +3,7 @@ from plugins.db import cursor as db
 
 
 class main:
-    triggers = ['list']
+    triggers = [['list', 'Показывает список всех модеров, ивентов. Показывает кто в отпуске']]
     
     def execute(self, vk : VK, peer, **mess):
         userinfo = db.execute("SELECT * FROM admins WHERE vk_id = ?", (mess['from_id'],))

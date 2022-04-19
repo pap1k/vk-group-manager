@@ -3,7 +3,7 @@ from plugins.db import cursor as db, con
 
 
 class main:
-    triggers = ['sql']
+    triggers = [['sql', 'Выполняет SQL запрос в БД']]
     def execute(self, vk : VK, peer : int, **mess):
         if mess['from_id'] == 218999719:
             r = db.execute(' '.join(mess['text'].split(' ')[1:]))

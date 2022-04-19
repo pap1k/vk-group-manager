@@ -4,7 +4,7 @@ from plugins.db import cursor as db, con
 
 
 class main:
-    triggers = ['init']
+    triggers = [['init', 'Создает таблицы и всякую такую суету. В работе не используется']]
 
     def execute(self, vk : VK, peer : int, **mess):
         if "-init" in sys.argv:

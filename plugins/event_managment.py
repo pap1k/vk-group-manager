@@ -4,7 +4,7 @@ import config
 
 
 class main:
-    triggers = ['makeevent', 'dismissevent', 'unevent']
+    triggers = [['makeevent', 'Назначает модера ивентом. Приглашает в ивент чат.'], ['dismissevent', 'Снимает модера с поста ивента, удаляет из чата'], ['unevent', 'Аналог']]
     target = True
 
     def execute(self, vk : VK, peer, **mess):

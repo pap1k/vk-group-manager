@@ -8,13 +8,14 @@ def date(unixtime, format = '%d.%m.%Y %H:%M:%S'):
     return d.strftime(format)
 
 class main:
-    triggers = ['estat', 'eventstat']
+    triggers = [['estat', 'Показывает подробную статистику отчетов ивент модера на текущий момент'], ['eventstat', 'Аналог']]
     target = True
 
     def execute(self, vk : VK, peer, userId, **mess):
         userinfo = db.execute("SELECT * FROM admins WHERE vk_id = ?", (mess['from_id'],))
         if len(userinfo.fetchall()) == 1:
             eventinfo = db.execute("SELECT * FROM reports WHERE vk_id = ?", (userId,)).fetchall()
+            
             if len(eventinfo) > 0:
                 reporttext = "Список отчетов модера:\n"
                 spent = 0
