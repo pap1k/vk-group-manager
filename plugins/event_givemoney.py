@@ -2,6 +2,7 @@ import datetime, time
 from core import VK
 from plugins.db import cursor as db
 from plugins.db import con
+import re
 
 def date(unixtime, format = '%d.%m.%Y %H:%M:%S'):
     d = datetime.datetime.fromtimestamp(unixtime)
@@ -22,6 +23,7 @@ class main:
                     vk.api("messages.send", peer_id=peer, reply_to=mess['id'], message="[BOT]\n"+reporttext)
                 
                 else:
+                    mess['text'] = re.sub(r'[ ]+', ' ', mess['text'])
                     if len(mess['text'].split(' ')) < 3:
                         return vk.api("messages.send", peer_id=peer, reply_to=mess['id'], message="[BOT]\nУкажите сумму (число)")
                     s = int(mess['text'].split(' ')[2].strip())

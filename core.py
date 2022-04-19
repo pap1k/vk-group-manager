@@ -131,11 +131,8 @@ class LongPoll:
                                         obj = {'message': mess}
                                         listener[1](obj)
                                     except (IndexError, TypeError, NameError):
-                                        if i > 3:
-                                            break
-                                        if i > 1:
-                                            print(f"{getStrTime()} Проблема с получением сообщения: {items}")
-                                            time.sleep(0.5)
+                                        print(f"{getStrTime()} Проблема с получением сообщения: {items}")
+                                        break
                                         
 
                                 # print(f'Сообщение: {mess}')
