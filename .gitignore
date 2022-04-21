@@ -1,4 +1,6 @@
 *.db
 __pycache__/
-config.py
 backups/
+config.py
+env/
+

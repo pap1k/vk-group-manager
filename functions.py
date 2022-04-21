@@ -1,9 +1,11 @@
-from core import VK
+from core import VK, getStrTime
 import config, importlib, os, re
 
 vk = VK(config.TOKEN)
 
 plugins = []
+
+
 
 def loadCommands():
     for file in os.listdir('plugins'):
@@ -11,8 +13,8 @@ def loadCommands():
             plugin = importlib.import_module('plugins.'+file.replace('.py',''))
             if hasattr(plugin.main, "triggers"):
                 plugins.append(plugin)
-                print("Загружен плагин "+file.replace('.py',''))
-            else: print("Ошибка загрузки плагина "+file.replace('.py','')+" - отсутствует атрибут triggers")
+                print(f"{getStrTime()} Загружен плагин "+file.replace('.py',''))
+            else: print(f"{getStrTime()} Ошибка загрузки плагина "+file.replace('.py','')+" - отсутствует атрибут triggers")
 
 loadCommands()
 
@@ -43,10 +45,12 @@ def newMessageEventHandler(obj):
 
         for plugin in plugins:
             for trigger in plugin.main.triggers:
+                
                 cond = cmd == trigger
                 if type(trigger) == list:
                     cond = cmd == trigger[0]
                 if cond:
+                    print(f'{getStrTime()} Словлена команда: {message["text"].lower() }')
                     if cmd == "cmdlist":
                         plugin.main().execute(vk, peer = message['peer_id'], plist = plugins, cmd = cmd, **message)
                         return None

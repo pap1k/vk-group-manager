@@ -1,4 +1,6 @@
+from types import NoneType
 import requests
+import time
 from random import randint as rand
 
 CORE_V = 0.3
@@ -32,13 +34,20 @@ class VK:
         if method == "messages.send":
             params['random_id'] = rand(1000, 100000)
 
-        r = requests.post(API_URL+method, data=params).json()
+        try:
+            r = requests.post(API_URL+method, data=params).json()
+        except requests.exceptions.ConnectionError:
+            print(f'{getStrTime()} Соединение отвалилось, пробуем снова')
+            return self.api(method, **params)
         if 'error' in r:
-            print("An error: ", r['error'])
-            return None
+            print(f"{getStrTime()} An error: ", r['error'])
+            return None 
         else:
             return r['response']
 
+
+def getStrTime():
+    return time.strftime('[%m.%d %H:%M:%S]')
 
 class LongPoll:
     key : str
@@ -82,7 +91,7 @@ class LongPoll:
         while self.doFlag:
             try:
                 if first:
-                    print("Бот слушает обновления")
+                    print(f"{getStrTime()} Бот слушает обновления")
                     first = False
 
                 resp = requests.get(f"{self.server}?act=a_check&key={self.key}&ts={self.ts}&wait={self.wait}").json()
@@ -96,7 +105,7 @@ class LongPoll:
                     elif resp['filed'] == 4:
                         continue
                     else:
-                        print("Unknown erorr")
+                        print(f"{getStrTime()} Unknown erorr")
                         self.getServerInfo()
                         continue
                 if resp['ts'] != self.ts:
@@ -105,11 +114,28 @@ class LongPoll:
                     for listener in self.listeners:
                         event = upd['type'] if self.mode == "group" else userToGroupEvent(upd[0])
                         if listener[0] == event:
+                            # print('Пришло сообщение')
                             if self.mode == "user":
                                 #КОСТЫЛЬ ТОЛЬКО НА СООБЩЕНИЯ КОТОРЫЕ ЧЕРЕЗ ЮЗЕР ЛОНГПОЛЛ
-                                mess = self.vkInstanse.api("messages.getById", message_ids=upd[1])['items'][0]
-                                obj = {'message': mess}
-                                listener[1](obj)
+                                # try:
+                                #     mess = self.vkInstanse.api("messages.getById", message_ids=upd[1])['items'][0]
+                                # except IndexError:
+                                    # mess = self.vkInstanse.api("messages.getById", message_ids=upd[1])['items'][0]
+                                mess = None
+                                i = 0
+                                while mess == None:
+                                    i += 1
+                                    items = self.vkInstanse.api("messages.getById", message_ids=upd[1])
+                                    try:
+                                        mess = items['items'][0]
+                                        obj = {'message': mess}
+                                        listener[1](obj)
+                                    except (IndexError, TypeError, NameError):
+                                        print(f"{getStrTime()} Проблема с получением сообщения: {items}")
+                                        break
+                                        
+
+                                # print(f'Сообщение: {mess}')
                                 # threading.Thread(target=listener[1], args=(obj,)).start()
                             else:
                                 # threading.Thread(target=listener[1], args=(upd['object'],)).start()
@@ -117,12 +143,12 @@ class LongPoll:
                                         
             except KeyboardInterrupt:
                 self.stop()
+            except requests.exceptions.ConnectionError:
+                print(f'{getStrTime()} Соединение отвалилось, пробуем снова')
 
             # except Exception as e:
             #     print("Uncatchable exception: ", e)
 
     def stop(self):
-        print("Stopping LongPoll")
-        self.doFlag = False
-
-        
+        print(f"{getStrTime()} Stopping LongPoll")
+        self.doFlag = False 
