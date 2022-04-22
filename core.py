@@ -1,4 +1,3 @@
-from types import NoneType
 import requests
 import time
 from random import randint as rand
