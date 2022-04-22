@@ -128,10 +128,13 @@ class LongPoll:
                                     try:
                                         mess = items['items'][0]
                                         obj = {'message': mess}
-                                        listener[1](obj)
-                                    except (IndexError, TypeError, NameError):
-                                        print(f"{getStrTime()} Проблема с получением сообщения: {items}")
+                                    except (IndexError, TypeError, NameError) as e:
+                                        print(f"{getStrTime()} Проблема с получением сообщения [{upd[1]}]: {e}")
                                         break
+                                    try:
+                                        listener[1](obj)
+                                    except Exception as e:
+                                        print(f"{getStrTime()} Проблема с обработкой сообщения листенером: {e}")
                                         
 
                                 # print(f'Сообщение: {mess}')
