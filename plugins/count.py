@@ -117,10 +117,12 @@ class main:
         result +=  "║*********************************\n"
         result +=  "║ > Модераторы в отпуске:\n"
         result +=  "║*********************************\n"
-
-        vac_names = vk.api("users.get", user_ids=','.join(map(str, vac)))
-        for name in vac_names:
-            result += f"║{name['first_name']} {name['last_name']}\n"
+        try: 
+            vac_names = vk.api("users.get", user_ids=','.join(map(str, vac)))
+            for name in vac_names:
+                result += f"║{name['first_name']} {name['last_name']}\n"
+        except TypeError:
+            pass
 
         result += "Фильтр постов за сегодня:\n"
         result +=  "║*********************************\n"
