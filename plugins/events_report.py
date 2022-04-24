@@ -23,6 +23,8 @@ class main:
                 if len(msgdata) != 3 or 'attachments' not in mess or len(mess['attachments']) == 0 or mess['attachments'][0]['type'] != 'photo':
                     return self.reply("Отправляйте отчет согласно следующему формату:\n\n/report\n[Сумма выплаченного приза]\n[Ник победителя]\n[Скриншот выплаты]")
                 
+                msgdata = list(map(str.strip, msgdata))
+
                 if not msgdata[1].isnumeric() or len(msgdata[2]) < 3:
                     return self.reply("Отправляйте отчет согласно следующему формату:\n\n/report\n[Сумма выплаченного приза]\n[Ник победителя]\n[Скриншот выплаты]")
                 report_data = {
