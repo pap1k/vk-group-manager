@@ -39,8 +39,13 @@ class VK:
             print(f'{getStrTime()} Соединение отвалилось, пробуем снова')
             return self.api(method, **params)
         if 'error' in r:
-            print(f"{getStrTime()} An error: ", r['error'])
-            return None 
+            if 'Too many requests per second' in r:
+                print(f"Too many requests per second: wait 2 secs and retry")
+                time.sleep(2)
+                return self.api(method, **params)
+            else:
+                print(f"{getStrTime()} An error: ", r['error'])
+                return None 
         else:
             return r['response']
 
