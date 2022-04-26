@@ -61,7 +61,7 @@ class VK:
         else:
             return r['response']
 
-    def api(self, method, **params):
+    def api(self, method, priority = 0, **params):
 
         params['access_token'] = self.token
         params['v'] = self.v
@@ -69,7 +69,8 @@ class VK:
 
         if method == "messages.send":
             params['random_id'] = rand(1000, 100000)
-
+        if priority == 1:
+            return self._do_request({"URL":API_URL+method, "DATA":params})
         return self._queue_push(API_URL+method, data=params)
 
 
