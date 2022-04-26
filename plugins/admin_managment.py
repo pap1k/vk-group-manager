@@ -6,7 +6,7 @@ from plugins.db import cursor as db, con
 class main:
     triggers = [['addadmin', 'Привелегирует пользователя админ правами в боте'], ['deleteadmin', 'Отбирает права адина у пользователя в боте']]
     target = True
-    def execute(self, vk : VK, peer : int, **mess):
+    def execute(self, vk : VK, reply, **mess):
 
         if "-dev" in sys.argv:
             db.execute("CREATE TABLE IF NOT EXISTS admins (vk_id INT NOT NULL)")
@@ -19,22 +19,22 @@ class main:
 
                     name = vk.api("users.get", user_ids=mess['userId'])[0]
 
-                    m = f"[BOT]\n{name['first_name']} {name['last_name']} назначен админом в боте"
-                    vk.api("messages.send", peer_id=peer, message=m, reply_to=mess['id'])
+                    m = f"{name['first_name']} {name['last_name']} назначен админом в боте"
+                    reply(m)
                 else:
-                    vk.api("messages.send", peer_id=peer, message="[BOT]\nУказанный пользователь уже админ", reply_to=mess['id'])
+                    reply("Указанный пользователь уже админ")
             else:
                 if len(data.fetchall()) > 0:
                     db.execute("DELETE FROM admins WHERE vk_id = ?", (mess['userId'],))
 
                     name = vk.api("users.get", user_ids=mess['userId'])[0]
 
-                    m = f"[BOT]\n{name['first_name']} {name['last_name']} снят с поста админа в боте"
-                    vk.api("messages.send", peer_id=peer, message=m, reply_to=mess['id'])
+                    m = f"{name['first_name']} {name['last_name']} снят с поста админа в боте"
+                    reply(m)
                 else:
-                     vk.api("messages.send", peer_id=peer, message="[BOT]\nУказанный пользователь не админ", reply_to=mess['id'])
+                    reply("Указанный пользователь не админ")
 
             con.commit()
             
         else:
-            vk.api("messages.send", peer_id=peer, message="[BOT]\nДля использования этой команды необходимо запустить программу в режиме -dev", reply_to=mess['id'])
+            reply("Для использования этой команды необходимо запустить программу в режиме -dev")
