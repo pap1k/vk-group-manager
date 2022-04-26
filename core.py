@@ -20,13 +20,15 @@ def time_ms():
 
 
 class VK:
-    _lastQTS = time_ms() #last query timestamp
-    _queue = []
+    _lastQTS : float #last query timestamp
+    _queue : list
     token : str
     v : float
     lang : str
 
     def __init__(self, token : str, v = API_V, lang = "ru") -> None:
+        self._queue = []
+        self._lastQTS = time_ms()
         self.lang = lang
         self.token = token
         self.v = v
