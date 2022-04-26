@@ -56,7 +56,12 @@ class VK:
             return self._do_request(oldreq)
 
         if 'error' in r:
-            print(f"{getStrTime()} [VK API / CORE] An error: ", r['error'])
+            err = r['error']['error_code']
+            if err == 6:
+                time.sleep(0.5)
+                self._do_request(oldreq)
+            else:
+                print(f"{getStrTime()} [VK API / CORE] An error: ", r['error']['error_msg'])
             return None 
         else:
             return r['response']
