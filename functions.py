@@ -51,12 +51,13 @@ def newMessageEventHandler(obj):
                     cond = cmd == trigger[0]
                 if cond:
                     print(f'{getStrTime()} Словлена команда: {message["text"].lower() }')
+                    reply = lambda txt: vk.api("messages.send", peer_id=message['peer_id'], reply_to=message['id'], message="[BOT]\n"+txt)
                     if cmd == "cmdlist":
                         plugin.main().execute(vk, peer = message['peer_id'], plist = plugins, cmd = cmd, **message)
                         return None
                     elif hasattr(plugin.main, 'target') and not userId:
                         vk.api("messages.send", peer_id=message['peer_id'], message='Ошибка: Не указан пользователь (Указывать через @)', reply_to=message['id'])
                         return None
-                    plugin.main().execute(vk, peer = message['peer_id'], userId = userId, cmd = cmd, **message)
+                    plugin.main().execute(vk, peer = message['peer_id'], userId = userId, cmd = cmd, reply=reply, **message)
                     # threading.Thread(target=plug.execute,args=(cmd, userId)).start()
         
