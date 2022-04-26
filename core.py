@@ -1,11 +1,12 @@
-import requests
-import time
+import requests, threading, time, sys
 from random import randint as rand
 
 CORE_V = 0.3
 
 API_URL = "https://api.vk.com/method/"
 API_V = 5.103
+MAX_REQUESTS_PER_SEC = 4
+REQUEST_DELAY = int(1/MAX_REQUESTS_PER_SEC*1000)
 
 def userToGroupEvent(eId):
     table = {
@@ -14,7 +15,13 @@ def userToGroupEvent(eId):
     }
     return table[eId] if eId in table else "Unknown"
 
+def time_ms():
+    return int(time.time()*1_000)
+
+
 class VK:
+    _lastQTS = time_ms() #last query timestamp
+    _queue = []
     token : str
     v : float
     lang : str
@@ -23,6 +30,34 @@ class VK:
         self.lang = lang
         self.token = token
         self.v = v
+
+    def _queue_push(self, url, data):
+        self._queue.append({
+            "URL": url,
+            "DATA": data
+        })
+        start_wait = time_ms()
+        while time_ms() - self._lastQTS < REQUEST_DELAY:
+            time.sleep(0.1)
+        if "-dev" in sys.argv:
+            print(f"{getStrTime()} [VK API / CORE] LQTS: {self._lastQTS}, CUR: {time_ms()}, DIFF: {time_ms() - self._lastQTS}, DELAY WAS: {time_ms()-start_wait}")
+        return self._do_request()
+
+    def _do_request(self, req = None):
+        if req: oldreq = req
+        else: oldreq = self._queue.pop(0)
+        try:
+            self._lastQTS = time_ms()
+            r = requests.post(oldreq["URL"], data=oldreq["DATA"]).json()
+        except requests.exceptions.ConnectionError:
+            print(f'{getStrTime()} Соединение отвалилось, пробуем снова')
+            return self._do_request(oldreq)
+
+        if 'error' in r:
+            print(f"{getStrTime()} [VK API / CORE] An error: ", r['error'])
+            return None 
+        else:
+            return r['response']
 
     def api(self, method, **params):
 
@@ -33,16 +68,7 @@ class VK:
         if method == "messages.send":
             params['random_id'] = rand(1000, 100000)
 
-        try:
-            r = requests.post(API_URL+method, data=params).json()
-        except requests.exceptions.ConnectionError:
-            print(f'{getStrTime()} Соединение отвалилось, пробуем снова')
-            return self.api(method, **params)
-        if 'error' in r:
-            print(f"{getStrTime()} An error: ", r['error'])
-            return None 
-        else:
-            return r['response']
+        return self._queue_push(API_URL+method, data=params)
 
 
 def getStrTime():
