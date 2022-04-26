@@ -53,6 +53,8 @@ while True:
         LP.addListener('message_new', newMessageEventHandler)
 
         LP.run()
+    except KeyboardInterrupt:
+        break
     except Exception as err:
         print(f'НЕОТЛОВЛЕННАЯ ОШИБКА {err}')
 
