@@ -1,4 +1,4 @@
-import requests, threading, time, sys
+import requests, inspect, time, sys
 from random import randint as rand
 
 CORE_V = 0.3
@@ -7,6 +7,26 @@ API_URL = "https://api.vk.com/method/"
 API_V = 5.103
 MAX_REQUESTS_PER_SEC = 4
 REQUEST_DELAY = int(1/MAX_REQUESTS_PER_SEC*1000)
+
+def getStrTime():
+    return time.strftime('[%m.%d %H:%M:%S]')
+
+def logCore(*args, createfile=False, **kwargs):
+    curframe = inspect.currentframe()
+    calframe = inspect.getouterframes(curframe, 2)
+    text = ""
+    for v in args: text += "{}\t".format(v)
+    if kwargs:
+        for k in kwargs: text += "{} = {}\t".format(k, kwargs[k])
+    text = text[:-1]
+    text = f"{getStrTime()} [VK API / CORE] ({calframe[1][3]}:{calframe[1][2]}): "+text
+    if "-dev" in sys.argv:
+        print(text)
+    if createfile:
+        open("log.txt", "w")
+    open("log.txt", 'a', encoding="utf-8").write(text+"\n")
+
+logCore("Started", createfile=True)
 
 def userToGroupEvent(eId):
     table = {
@@ -41,8 +61,9 @@ class VK:
         start_wait = time_ms()
         while time_ms() - self._lastQTS < REQUEST_DELAY:
             time.sleep(0.1)
-        if "-dev" in sys.argv:
-            print(f"{getStrTime()} [VK API / CORE] LQTS: {self._lastQTS}, CUR: {time_ms()}, DIFF: {time_ms() - self._lastQTS}, DELAY WAS: {time_ms()-start_wait}")
+
+        logCore(LQTS=self._lastQTS, CUR=time_ms(), DIFF=time_ms() - self._lastQTS, DELAY_WAS=time_ms()-start_wait)
+        
         return self._do_request()
 
     def _do_request(self, req = None):
@@ -52,7 +73,7 @@ class VK:
             self._lastQTS = time_ms()
             r = requests.post(oldreq["URL"], data=oldreq["DATA"]).json()
         except requests.exceptions.ConnectionError:
-            print(f'{getStrTime()} Соединение отвалилось, пробуем снова')
+            logCore('Соединение отвалилось, пробуем снова')
             return self._do_request(oldreq)
 
         if 'error' in r:
@@ -61,7 +82,7 @@ class VK:
                 time.sleep(0.5)
                 self._do_request(oldreq)
             else:
-                print(f"{getStrTime()} [VK API / CORE] An error: ", r['error']['error_msg'])
+                logCore("An error: ", r['error']['error_msg'])
             return None 
         else:
             return r['response']
@@ -77,10 +98,6 @@ class VK:
         if priority == 1:
             return self._do_request({"URL":API_URL+method, "DATA":params})
         return self._queue_push(API_URL+method, data=params)
-
-
-def getStrTime():
-    return time.strftime('[%m.%d %H:%M:%S]')
 
 class LongPoll:
     key : str
@@ -124,7 +141,7 @@ class LongPoll:
         while self.doFlag:
             try:
                 if first:
-                    print(f"{getStrTime()} Бот слушает обновления")
+                    logCore("Бот слушает обновления")
                     first = False
 
                 resp = requests.get(f"{self.server}?act=a_check&key={self.key}&ts={self.ts}&wait={self.wait}").json()
@@ -138,7 +155,7 @@ class LongPoll:
                     elif resp['filed'] == 4:
                         continue
                     else:
-                        print(f"{getStrTime()} Unknown erorr")
+                        logCore("Unknown erorr")
                         self.getServerInfo()
                         continue
                 if resp['ts'] != self.ts:
@@ -163,12 +180,12 @@ class LongPoll:
                                         mess = items['items'][0]
                                         obj = {'message': mess}
                                     except (IndexError, TypeError, NameError) as e:
-                                        print(f"{getStrTime()} Проблема с получением сообщения [{upd[1]}]: {e}")
+                                        logCore(f"Проблема с получением сообщения [{upd[1]}]: {e}")
                                         break
                                     try:
                                         listener[1](obj)
                                     except Exception as e:
-                                        print(f"{getStrTime()} Проблема с обработкой сообщения листенером: {e}")
+                                        logCore(f"Проблема с обработкой сообщения листенером: {e}")
                                         
 
                                 # print(f'Сообщение: {mess}')
@@ -180,11 +197,11 @@ class LongPoll:
             except KeyboardInterrupt:
                 self.stop()
             except requests.exceptions.ConnectionError:
-                print(f'{getStrTime()} Соединение отвалилось, пробуем снова')
+                logCore('Соединение отвалилось, пробуем снова')
 
             # except Exception as e:
             #     print("Uncatchable exception: ", e)
 
     def stop(self):
-        print(f"{getStrTime()} Stopping LongPoll")
+        logCore("Stopping LongPoll")
         self.doFlag = False 
