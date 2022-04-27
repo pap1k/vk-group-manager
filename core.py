@@ -1,5 +1,6 @@
-import requests, inspect, time, sys
+import requests, time, sys
 from random import randint as rand
+from log import Log
 
 CORE_V = 0.3
 
@@ -8,23 +9,7 @@ API_V = 5.103
 MAX_REQUESTS_PER_SEC = 4
 REQUEST_DELAY = int(1/MAX_REQUESTS_PER_SEC*1000)
 
-def getStrTime():
-    return time.strftime('[%m.%d %H:%M:%S]')
-
-def logCore(*args, createfile=False, **kwargs):
-    curframe = inspect.currentframe()
-    calframe = inspect.getouterframes(curframe, 2)
-    text = ""
-    for v in args: text += "{}\t".format(v)
-    if kwargs:
-        for k in kwargs: text += "{} = {}\t".format(k, kwargs[k])
-    text = text[:-1]
-    text = f"{getStrTime()} [VK API / CORE] ({calframe[1][3]}:{calframe[1][2]}): "+text
-    if "-dev" in sys.argv:
-        print(text)
-    if createfile:
-        open("log.txt", "w")
-    open("log.txt", 'a', encoding="utf-8").write(text+"\n")
+logCore = Log("[VK API / CORE]").log
 
 logCore("Started", createfile=True)
 
