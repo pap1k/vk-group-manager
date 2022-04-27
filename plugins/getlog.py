@@ -19,9 +19,9 @@ class main:
                         if r[0][0].isnumeric() and r[0][1].isnumeric():
                             text = '\n'.join(txt[int(r[0][0]):int(r[0][1])])
                         else:
-                            reply("Юзаж: /getlog без параметров - последние 30, /getlog n - последние n, /getlog n-n1 - с n по n1")
+                            return reply("Юзаж: /getlog без параметров - последние 30, /getlog n - последние n, /getlog n-n1 - с n по n1")
                     else:
-                        reply("Юзаж: /getlog без параметров - последние 30, /getlog n - последние n, /getlog n-n1 - с n по n1")
+                        return reply("Юзаж: /getlog без параметров - последние 30, /getlog n - последние n, /getlog n-n1 - с n по n1")
             
             reply(text)
         else: reply("Вы не можете использовать эту команду")
