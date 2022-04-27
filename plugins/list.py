@@ -5,7 +5,7 @@ from plugins.db import cursor as db
 class main:
     triggers = [['list', 'Показывает список всех модеров, ивентов. Показывает кто в отпуске']]
     
-    def execute(self, vk : VK, peer, **mess):
+    def execute(self, vk : VK, peer, reply, **mess):
         userinfo = db.execute("SELECT * FROM admins WHERE vk_id = ?", (mess['from_id'],))
         if len(userinfo.fetchall()) == 1:
             table = db.execute("SELECT * FROM moders").fetchall()
@@ -36,6 +36,7 @@ class main:
                     moders_names += '\n'
                 i+=1
             message = "Обычные модеры:\n"+moders_names+"---------------\nEvent-модеры:\n"+events_names
-            vk.api("messages.send", peer_id=peer, reply_to=mess['id'], message="[BOT]\n"+message)
+            reply(message)
+            #vk.api("messages.send", peer_id=peer, reply_to=mess['id'], message="[BOT]\n"+message)
         else:
             vk.api("messages.send", peer_id=peer, reply_to=mess['id'], message="[BOT]\nВы не можете использовать эту команду")

@@ -1,11 +1,12 @@
-from core import VK, getStrTime
+from core import VK
+from log import Log
 import config, importlib, os, re
 
 vk = VK(config.TOKEN)
 
 plugins = []
 
-
+log = Log("[FUNCS]").log
 
 def loadCommands():
     for file in os.listdir('plugins'):
@@ -13,8 +14,8 @@ def loadCommands():
             plugin = importlib.import_module('plugins.'+file.replace('.py',''))
             if hasattr(plugin.main, "triggers"):
                 plugins.append(plugin)
-                print(f"{getStrTime()} Загружен плагин "+file.replace('.py',''))
-            else: print(f"{getStrTime()} Ошибка загрузки плагина "+file.replace('.py','')+" - отсутствует атрибут triggers")
+                log(f"Загружен плагин "+file.replace('.py',''))
+            else: log(f"Ошибка загрузки плагина "+file.replace('.py','')+" - отсутствует атрибут triggers")
 
 loadCommands()
 
@@ -50,13 +51,14 @@ def newMessageEventHandler(obj):
                 if type(trigger) == list:
                     cond = cmd == trigger[0]
                 if cond:
-                    print(f'{getStrTime()} Словлена команда: {message["text"].lower() }')
+                    log(f'Словлена команда: {message["text"].lower() }')
+                    reply = lambda txt: vk.api("messages.send", peer_id=message['peer_id'], reply_to=message['id'], message="[BOT]\n"+txt)
                     if cmd == "cmdlist":
                         plugin.main().execute(vk, peer = message['peer_id'], plist = plugins, cmd = cmd, **message)
                         return None
                     elif hasattr(plugin.main, 'target') and not userId:
                         vk.api("messages.send", peer_id=message['peer_id'], message='Ошибка: Не указан пользователь (Указывать через @)', reply_to=message['id'])
                         return None
-                    plugin.main().execute(vk, peer = message['peer_id'], userId = userId, cmd = cmd, **message)
+                    plugin.main().execute(vk, peer = message['peer_id'], userId = userId, cmd = cmd, reply=reply, **message)
                     # threading.Thread(target=plug.execute,args=(cmd, userId)).start()
         
