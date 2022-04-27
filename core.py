@@ -62,7 +62,7 @@ class VK:
         while time_ms() - self._lastQTS < REQUEST_DELAY:
             time.sleep(0.1)
 
-        logCore(LQTS=self._lastQTS, CUR=time_ms(), DIFF=time_ms() - self._lastQTS, DELAY_WAS=time_ms()-start_wait)
+        #logCore(LQTS=self._lastQTS, CUR=time_ms(), DIFF=time_ms() - self._lastQTS, DELAY_WAS=time_ms()-start_wait)
         
         return self._do_request()
 
