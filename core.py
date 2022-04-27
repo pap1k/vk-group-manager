@@ -9,9 +9,8 @@ API_V = 5.103
 MAX_REQUESTS_PER_SEC = 4
 REQUEST_DELAY = int(1/MAX_REQUESTS_PER_SEC*1000)
 
-logCore = Log("[VK API / CORE]").log
-
-logCore("Started", createfile=True)
+logCore = Log("[VK API / VK]").log
+logLP = Log("[VK API / LP]").log
 
 def userToGroupEvent(eId):
     table = {
@@ -22,7 +21,6 @@ def userToGroupEvent(eId):
 
 def time_ms():
     return int(time.time()*1_000)
-
 
 class VK:
     _lastQTS : float #last query timestamp
@@ -126,7 +124,7 @@ class LongPoll:
         while self.doFlag:
             try:
                 if first:
-                    logCore("Бот слушает обновления")
+                    logLP("Бот слушает обновления")
                     first = False
 
                 resp = requests.get(f"{self.server}?act=a_check&key={self.key}&ts={self.ts}&wait={self.wait}").json()
@@ -140,7 +138,7 @@ class LongPoll:
                     elif resp['filed'] == 4:
                         continue
                     else:
-                        logCore("Unknown erorr")
+                        logLP("Unknown erorr")
                         self.getServerInfo()
                         continue
                 if resp['ts'] != self.ts:
@@ -165,12 +163,12 @@ class LongPoll:
                                         mess = items['items'][0]
                                         obj = {'message': mess}
                                     except (IndexError, TypeError, NameError) as e:
-                                        logCore(f"Проблема с получением сообщения [{upd[1]}]: {e}")
+                                        logLP(f"Проблема с получением сообщения [{upd[1]}]: {e}")
                                         break
                                     try:
                                         listener[1](obj)
                                     except Exception as e:
-                                        logCore(f"Проблема с обработкой сообщения листенером: {e}")
+                                        logLP(f"Проблема с обработкой сообщения листенером: {e}")
                                         
 
                                 # print(f'Сообщение: {mess}')
@@ -182,11 +180,11 @@ class LongPoll:
             except KeyboardInterrupt:
                 self.stop()
             except requests.exceptions.ConnectionError:
-                logCore('Соединение отвалилось, пробуем снова')
+                logLP('Соединение отвалилось, пробуем снова')
 
             # except Exception as e:
             #     print("Uncatchable exception: ", e)
 
     def stop(self):
-        logCore("Stopping LongPoll")
+        logLP("Stopping LongPoll")
         self.doFlag = False 

@@ -48,7 +48,7 @@ t.start()
 LP = LongPoll(config.TOKEN)
 
 LP.addListener('message_new', newMessageEventHandler)
-
+log("Started", createfile=True)
 LP.run()
 
 
