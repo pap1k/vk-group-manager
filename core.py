@@ -1,11 +1,16 @@
-import requests
-import time
+import requests, time, sys
 from random import randint as rand
+from log import Log
 
 CORE_V = 0.3
 
 API_URL = "https://api.vk.com/method/"
 API_V = 5.103
+MAX_REQUESTS_PER_SEC = 4
+REQUEST_DELAY = int(1/MAX_REQUESTS_PER_SEC*1000)
+
+logCore = Log("[VK API / VK]").log
+logLP = Log("[VK API / LP]").log
 
 def userToGroupEvent(eId):
     table = {
@@ -14,17 +19,58 @@ def userToGroupEvent(eId):
     }
     return table[eId] if eId in table else "Unknown"
 
+def time_ms():
+    return int(time.time()*1_000)
+
 class VK:
+    _lastQTS : float #last query timestamp
+    _queue : list
     token : str
     v : float
     lang : str
 
     def __init__(self, token : str, v = API_V, lang = "ru") -> None:
+        self._queue = []
+        self._lastQTS = time_ms()
         self.lang = lang
         self.token = token
         self.v = v
 
-    def api(self, method, **params):
+    def _queue_push(self, url, data):
+        self._queue.append({
+            "URL": url,
+            "DATA": data
+        })
+        start_wait = time_ms()
+        while time_ms() - self._lastQTS < REQUEST_DELAY:
+            time.sleep(0.1)
+
+        #logCore(LQTS=self._lastQTS, CUR=time_ms(), DIFF=time_ms() - self._lastQTS, DELAY_WAS=time_ms()-start_wait)
+        
+        return self._do_request()
+
+    def _do_request(self, req = None):
+        if req: oldreq = req
+        else: oldreq = self._queue.pop(0)
+        try:
+            self._lastQTS = time_ms()
+            r = requests.post(oldreq["URL"], data=oldreq["DATA"]).json()
+        except requests.exceptions.ConnectionError:
+            logCore('Соединение отвалилось, пробуем снова')
+            return self._do_request(oldreq)
+
+        if 'error' in r:
+            err = r['error']['error_code']
+            if err == 6:
+                time.sleep(0.5)
+                self._do_request(oldreq)
+            else:
+                logCore("An error: ", r['error']['error_msg'])
+            return None 
+        else:
+            return r['response']
+
+    def api(self, method, priority = 0, **params):
 
         params['access_token'] = self.token
         params['v'] = self.v
@@ -32,21 +78,9 @@ class VK:
 
         if method == "messages.send":
             params['random_id'] = rand(1000, 100000)
-
-        try:
-            r = requests.post(API_URL+method, data=params).json()
-        except requests.exceptions.ConnectionError:
-            print(f'{getStrTime()} Соединение отвалилось, пробуем снова')
-            return self.api(method, **params)
-        if 'error' in r:
-            print(f"{getStrTime()} An error: ", r['error'])
-            return None 
-        else:
-            return r['response']
-
-
-def getStrTime():
-    return time.strftime('[%m.%d %H:%M:%S]')
+        if priority == 1:
+            return self._do_request({"URL":API_URL+method, "DATA":params})
+        return self._queue_push(API_URL+method, data=params)
 
 class LongPoll:
     key : str
@@ -90,7 +124,7 @@ class LongPoll:
         while self.doFlag:
             try:
                 if first:
-                    print(f"{getStrTime()} Бот слушает обновления")
+                    logLP("Бот слушает обновления")
                     first = False
 
                 resp = requests.get(f"{self.server}?act=a_check&key={self.key}&ts={self.ts}&wait={self.wait}").json()
@@ -104,7 +138,7 @@ class LongPoll:
                     elif resp['filed'] == 4:
                         continue
                     else:
-                        print(f"{getStrTime()} Unknown erorr")
+                        logLP("Unknown erorr")
                         self.getServerInfo()
                         continue
                 if resp['ts'] != self.ts:
@@ -129,12 +163,12 @@ class LongPoll:
                                         mess = items['items'][0]
                                         obj = {'message': mess}
                                     except (IndexError, TypeError, NameError) as e:
-                                        print(f"{getStrTime()} Проблема с получением сообщения [{upd[1]}]: {e}")
+                                        logLP(f"Проблема с получением сообщения [{upd[1]}]: {e}")
                                         break
                                     try:
                                         listener[1](obj)
                                     except Exception as e:
-                                        print(f"{getStrTime()} Проблема с обработкой сообщения листенером: {e}")
+                                        logLP(f"Проблема с обработкой сообщения листенером: {e}")
                                         
 
                                 # print(f'Сообщение: {mess}')
@@ -146,11 +180,11 @@ class LongPoll:
             except KeyboardInterrupt:
                 self.stop()
             except requests.exceptions.ConnectionError:
-                print(f'{getStrTime()} Соединение отвалилось, пробуем снова')
+                logLP('Соединение отвалилось, пробуем снова')
 
             # except Exception as e:
             #     print("Uncatchable exception: ", e)
 
     def stop(self):
-        print(f"{getStrTime()} Stopping LongPoll")
+        logLP("Stopping LongPoll")
         self.doFlag = False 
