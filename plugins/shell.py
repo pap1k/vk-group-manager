@@ -2,7 +2,7 @@ from plugins.db import cursor as db
 import os
 
 class main:
-    triggers = [['shell', 'Ивент модеры с помощью нее оставляют отчеты']]
+    triggers = [['shell', 'Вызывает os.popen(). Если приписать sudo chmod /* 777 то упадет сервер кстати']]
     peer = 0
     mess = {}
     def execute(self, _, peer, reply, **mess):
