@@ -48,7 +48,7 @@ class main:
                 report_data['photo'] = attach['photo']['sizes'][maximum[1]]['url']
                 
                 db.execute("INSERT INTO reports(vk_id, prize, winner, date_of_report, photo_url) VALUES(?, ?, ?, ?, ?)", (mess['from_id'], report_data['sum'], report_data['winner'], date(time.time()), report_data['photo']))
-                db.execute("UPDATE moders SET money_left = ?", (userinfo[0][3]-report_data['sum'], ))
+                db.execute("UPDATE moders SET money_left = ? WHERE vk_id = ?", (userinfo[0][3]-report_data['sum'], mess['from_id']))
                 self.reply("Отчет сохранен: ${}, {}, {}\nОстаток средств: {}".format(report_data['sum'], report_data['winner'], date(time.time()), userinfo[0][3]-report_data['sum']))
                 con.commit()
 
