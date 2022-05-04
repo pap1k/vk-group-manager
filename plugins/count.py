@@ -6,6 +6,11 @@ def date(unixtime, format = '%d.%m.%Y %H:%M:%S'):
     d = datetime.datetime.fromtimestamp(unixtime)
     return d.strftime(format)
 
+def findInBDVac(id, dbvac):
+    for u in dbvac:
+        if id == u[0]:
+            return u
+
 def getDayCase(num):
     if str(num)[-1] == "1": return "день"
     elif int(str(num)[:1]) in range(5,10) or str(num)[-1] == "0": return "дней"
@@ -23,7 +28,8 @@ class main:
     def count(self, vk : VK, peer, test = False):
         '''Подсчёт'''
         moders = db.execute("SELECT * FROM moders").fetchall()
-        vac = [id[0] for id in db.execute("SELECT vk_id FROM vacation").fetchall()]
+        dbvac = db.execute("SELECT vk_id FROM vacation").fetchall()
+        vac = [id[0] for id in dbvac]
         moders_days = {}
         for moder in moders:#Заполняем кто сколько дней не постил. Инфа из базы
             moders_days[moder[0]] = moder[2]
@@ -82,10 +88,9 @@ class main:
             if not test:
                 db.execute("INSERT OR IGNORE INTO counter(vk_id) VALUES(?)", (creator,))
                 db.execute("UPDATE counter SET posts = posts + "+str(creators[creator])+" WHERE vk_id = ?", (creator,))
-        con.commit()
         
-        #TODO Вывести в чат всю хуйню
         result = "╔══════"+date(time.time()-500, "%d.%m.%Y")+"══════\n"
+        if test: result += "-------->TEST MODE<---------"
         result += f"║ > Всего опубликовано постов [{count}]:\n"
         result +=  "║*********************************\n"
 
@@ -118,9 +123,21 @@ class main:
         result +=  "║ > Модераторы в отпуске:\n"
         result +=  "║*********************************\n"
 
+        vac_end = []
+        for u in dbvac:
+            if u[2] == date(time.time()-500, "%d.%m.%Y"):
+                vac_end.append(u[0])
+
         vac_names = vk.api("users.get", user_ids=','.join(map(str, vac)))
         for name in vac_names:
-            result += f"║{name['first_name']} {name['last_name']}\n"
+            if name['id'] in vac_end:
+                result += f"║{name['first_name']} {name['last_name']} [id{name['id']}|ВЫПИСАН ИЗ ОТПУСКА]\n"
+            else:
+                result += f"║{name['first_name']} {name['last_name']}\n"
+            
+        if len(vac_end) > 0:
+            for id in vac_end:
+                db.execute("DELETE FROM vacation WHERE vk_id = ?", (id,))
 
         result += "Фильтр постов за сегодня:\n"
         result +=  "║*********************************\n"
@@ -128,6 +145,7 @@ class main:
             result += f"║{h} - {hashs[h]}\n"
         result += "╚══════════════════"
 
+        con.commit()
         vk.api("messages.send", peer_id=peer, message=result)
 
     def execute(self, vk : VK, peer, **mess):
