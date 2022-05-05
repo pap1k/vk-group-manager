@@ -12,7 +12,7 @@ def getDayCase(num):
     else: return "дня"
 
 class main:
-    triggers = [['vac', 'Кидает модера в отпуск на указанный срок. НЕ ВЫВОДИТ ИЗ ОТПУСКА АВТОМАТИЧЕСКИ'], ['unvac', 'Выводит модера из отпуска']]
+    triggers = [['vac', 'Кидает модера в отпуск на указанный срок в днях'], ['unvac', 'Выводит модера из отпуска']]
     target = True
 
     def execute(self, vk : VK, peer, **mess):

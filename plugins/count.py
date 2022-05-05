@@ -23,7 +23,8 @@ class main:
     def count(self, vk : VK, peer, test = False):
         '''Подсчёт'''
         moders = db.execute("SELECT * FROM moders").fetchall()
-        vac = [id[0] for id in db.execute("SELECT vk_id FROM vacation").fetchall()]
+        dbvac = db.execute("SELECT * FROM vacation").fetchall()
+        vac = [id[0] for id in dbvac]
         moders_days = {}
         for moder in moders:#Заполняем кто сколько дней не постил. Инфа из базы
             moders_days[moder[0]] = moder[2]
@@ -82,10 +83,10 @@ class main:
             if not test:
                 db.execute("INSERT OR IGNORE INTO counter(vk_id) VALUES(?)", (creator,))
                 db.execute("UPDATE counter SET posts = posts + "+str(creators[creator])+" WHERE vk_id = ?", (creator,))
-        con.commit()
         
-        #TODO Вывести в чат всю хуйню
-        result = "╔══════"+date(time.time()-500, "%d.%m.%Y")+"══════\n"
+        mydate = date(time.time()-500, "%d.%m.%Y")
+        result = "╔══════"+mydate+"══════\n"
+        if test: result += "-------->TEST MODE<---------\n"
         result += f"║ > Всего опубликовано постов [{count}]:\n"
         result +=  "║*********************************\n"
 
@@ -115,14 +116,28 @@ class main:
         result += f"║Сегодня делали посты: {len(creators)}\n"
         result += f"║В отпуске: {len(vac)}\n"
         result +=  "║*********************************\n"
-        result +=  "║ > Модераторы в отпуске:\n"
-        result +=  "║*********************************\n"
-        try: 
-            vac_names = vk.api("users.get", user_ids=','.join(map(str, vac)))
-            for name in vac_names:
-                result += f"║{name['first_name']} {name['last_name']}\n"
-        except TypeError:
-            pass
+        if len(vac) > 0:
+            result +=  "║ > Модераторы в отпуске:\n"
+            result +=  "║*********************************\n"
+
+            vac_end = []
+            for u in dbvac:
+                print(u)
+                if u[2] == mydate:
+                    vac_end.append(u[0])
+            try: 
+                vac_names = vk.api("users.get", user_ids=','.join(map(str, vac)))
+                for name in vac_names:
+                    if name['id'] in vac_end:
+                        result += f"║{name['first_name']} {name['last_name']} [id{name['id']}|ВЫПИСАН ИЗ ОТПУСКА]\n"
+                    else:
+                        result += f"║{name['first_name']} {name['last_name']}\n"
+            except TypeError:
+                pass
+                
+            if len(vac_end) > 0:
+                for id in vac_end:
+                    db.execute("DELETE FROM vacation WHERE vk_id = ?", (id,))
 
         result += "Фильтр постов за сегодня:\n"
         result +=  "║*********************************\n"
@@ -130,6 +145,7 @@ class main:
             result += f"║{h} - {hashs[h]}\n"
         result += "╚══════════════════"
 
+        con.commit()
         vk.api("messages.send", peer_id=peer, message=result)
 
     def execute(self, vk : VK, peer, **mess):
