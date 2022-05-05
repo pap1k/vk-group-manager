@@ -89,7 +89,8 @@ class main:
                 db.execute("INSERT OR IGNORE INTO counter(vk_id) VALUES(?)", (creator,))
                 db.execute("UPDATE counter SET posts = posts + "+str(creators[creator])+" WHERE vk_id = ?", (creator,))
         
-        result = "╔══════"+date(time.time()-500, "%d.%m.%Y")+"══════\n"
+        mydate = date(time.time()-500, "%d.%m.%Y")
+        result = "╔══════"+mydate+"══════\n"
         if test: result += "-------->TEST MODE<---------"
         result += f"║ > Всего опубликовано постов [{count}]:\n"
         result +=  "║*********************************\n"
@@ -125,7 +126,7 @@ class main:
 
         vac_end = []
         for u in dbvac:
-            if u[2] == date(time.time()-500, "%d.%m.%Y"):
+            if u[2] == mydate:
                 vac_end.append(u[0])
 
         vac_names = vk.api("users.get", user_ids=','.join(map(str, vac)))
