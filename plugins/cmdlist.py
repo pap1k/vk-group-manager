@@ -19,7 +19,7 @@ class main:
                     if type(trigger) == list:
                         txt += f"[id0|/{trigger[0]}] : {trigger[1]}"
                     else:
-                        txt += f"[id0|/{trigger[0]}]"
+                        txt += f"[id0|/{trigger}]"
                     txt += "\n"
             vk.api("messages.send", peer_id=peer, reply_to=mess['id'], message="[BOT]\n"+txt)
         else:
