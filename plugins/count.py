@@ -137,7 +137,7 @@ class main:
                 for id in vac_end:
                     db.execute("DELETE FROM vacation WHERE vk_id = ?", (id,))
 
-        result += "║Фильтр постов за сегодня:\n"
+        result += "║ > Фильтр постов за сегодня:\n"
         result +=  "║*********************************\n"
         for h in hashs:
             result += f"║{h} - {hashs[h]}\n"
