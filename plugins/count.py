@@ -104,9 +104,9 @@ class main:
             if moders_days[moder] != 0:
                 not_post_ids.append(moder)
 
-        not_post_names = vk.api("users.get", user_ids=','.join(map(str, not_post_ids)))
+        not_post_names = vk.api("users.get", user_ids=','.join(map(str, not_post_ids)), name_case="gen")
         for name in not_post_names:
-            result += f"║{name['first_name']} {name['last_name']} - {moders_days[name['id']]}\n"
+            result += f"║{name['first_name']} {name['last_name']} - {moders_days[name['id']]} {getDayCase(moders_days[name['id']])}\n"
 
         result +=  "║*********************************\n"
         result +=  "║ > Статистика модераторов:\n"
@@ -137,7 +137,7 @@ class main:
                 for id in vac_end:
                     db.execute("DELETE FROM vacation WHERE vk_id = ?", (id,))
 
-        result += "Фильтр постов за сегодня:\n"
+        result += "║Фильтр постов за сегодня:\n"
         result +=  "║*********************************\n"
         for h in hashs:
             result += f"║{h} - {hashs[h]}\n"
