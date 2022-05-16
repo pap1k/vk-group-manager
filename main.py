@@ -26,14 +26,14 @@ def loop():
             current_time = time.localtime()
             if current_time.tm_hour == 0 and current_time.tm_min == 1 and current_time.tm_sec > 0 and current_time.tm_sec < 2:
                 log(f'Ежедневный отчёт генерируется')
-                sendMessagess('[BOT] Ежедневный отчёт генерируется')
+                # sendMessagess('[BOT] Ежедневный отчёт генерируется')
                 m2 = main()
                 m2.count(VK(config.TOKEN), config.PEER_ADD_NUM + config.CONVERSATIONS['new'])
                 log(f'Ежедневный отчёт отправлен')
                 if current_time.tm_mday == 1:
                     log(f'Ежемесячный отчёт генерируется')
-                    vk.api("messages.send", peer_id=config.PEER_ADD_NUM + config.CONV_TO_LISTEN, message='[BOT] Ежемесячный отчёт генерируется')
-                    sendMessagess('[BOT] Ежемесячный отчёт генерируется')
+                    # vk.api("messages.send", peer_id=config.PEER_ADD_NUM + config.CONV_TO_LISTEN, message='[BOT] Ежемесячный отчёт генерируется')
+                    # sendMessagess('[BOT] Ежемесячный отчёт генерируется')
                     m3 = month.main()
                     if type(config.CONV_TO_LISTEN) == list:
                         for conv in config.CONV_TO_LISTEN:
