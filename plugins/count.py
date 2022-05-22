@@ -125,13 +125,15 @@ class main:
                 print(u)
                 if u[2] == mydate:
                     vac_end.append(u[0])
-
-            vac_names = vk.api("users.get", user_ids=','.join(map(str, vac)))
-            for name in vac_names:
-                if name['id'] in vac_end:
-                    result += f"║{name['first_name']} {name['last_name']} [id{name['id']}|ВЫПИСАН ИЗ ОТПУСКА]\n"
-                else:
-                    result += f"║{name['first_name']} {name['last_name']}\n"
+            try: 
+                vac_names = vk.api("users.get", user_ids=','.join(map(str, vac)))
+                for name in vac_names:
+                    if name['id'] in vac_end:
+                        result += f"║{name['first_name']} {name['last_name']} [id{name['id']}|ВЫПИСАН ИЗ ОТПУСКА]\n"
+                    else:
+                        result += f"║{name['first_name']} {name['last_name']}\n"
+            except TypeError:
+                pass
                 
             if len(vac_end) > 0:
                 for id in vac_end:
