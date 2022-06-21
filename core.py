@@ -8,6 +8,7 @@ API_URL = "https://api.vk.com/method/"
 API_V = 5.103
 MAX_REQUESTS_PER_SEC = 4
 REQUEST_DELAY = int(1/MAX_REQUESTS_PER_SEC*1000)
+MAX_MESSAGE_LENGTH = 4095
 
 logCore = Log("[VK API / VK]").log
 logLP = Log("[VK API / LP]").log
@@ -70,14 +71,46 @@ class VK:
         else:
             return r['response']
 
-    def api(self, method, priority = 0, **params):
+    def _text_split(self, text : str):
+        #Делим по \n
+        sp = text.split('\n')
+        newtxt = [""]
+        idx = 0
+        for w in sp:
+            if len(w) + len(newtxt[idx]) > MAX_MESSAGE_LENGTH:
+                idx += 1
+                newtxt.append("")
+            newtxt[idx] += w
+        if len(newtxt) < len(text)//MAX_MESSAGE_LENGTH+1:
+            #Делим по пробелу, если не удалось по \n
+            sp = text.split(' ')
+            newtxt = [""]
+            idx = 0
+            for w in sp:
+                if len(w) + len(newtxt[idx]) > MAX_MESSAGE_LENGTH:
+                    idx += 1
+                    newtxt.append("")
+                newtxt[idx] += w
+        return newtxt
 
+                
+    def api(self, method, priority = 0, **params):
         params['access_token'] = self.token
         params['v'] = self.v
         params['lang'] = self.lang
 
         if method == "messages.send":
             params['random_id'] = rand(1000, 100000)
+            #Фикс длины сообщения
+            if 'message' in params:
+                if len(params['message']) > MAX_MESSAGE_LENGTH:
+                    texts = self._text_split(params['message'])
+                    if len(texts) > 1:
+                        for text in texts:
+                            newparams = params
+                            newparams['message'] = text
+                            self.api(method, **newparams)
+                        return
         if priority == 1:
             return self._do_request({"URL":API_URL+method, "DATA":params})
         return self._queue_push(API_URL+method, data=params)

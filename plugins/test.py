@@ -7,9 +7,11 @@ import plugins.count
 class main:
     triggers = ['test']
     
-    def execute(self, vk : VK, peer, **mess):
+    def execute(self, vk : VK, peer, reply, **mess):
         if '-dev' in sys.argv:
-            counter = plugins.count.main()
-            counter.execute(vk, peer, **mess)
+            n = ""
+            for i in range(0, 200):
+                n += f"[{i}] asdsdgsdgskdf jsdnf kjsndfjkansdfjk saf "
+            reply(n)
         else:
             vk.api("messages.send", peer_id=peer, message="Программа не в -dev режиме", reply_to=mess['id'])
