@@ -77,20 +77,20 @@ class VK:
         newtxt = [""]
         idx = 0
         for w in sp:
-            if len(w) + len(newtxt[idx]) > MAX_MESSAGE_LENGTH:
+            if len(w) + len(newtxt[idx])+1 > MAX_MESSAGE_LENGTH:
                 idx += 1
                 newtxt.append("")
-            newtxt[idx] += w
+            newtxt[idx] += w + '\n'
         if len(newtxt) < len(text)//MAX_MESSAGE_LENGTH+1:
             #Делим по пробелу, если не удалось по \n
             sp = text.split(' ')
             newtxt = [""]
             idx = 0
             for w in sp:
-                if len(w) + len(newtxt[idx]) > MAX_MESSAGE_LENGTH:
+                if len(w) + len(newtxt[idx])+1 > MAX_MESSAGE_LENGTH :
                     idx += 1
                     newtxt.append("")
-                newtxt[idx] += w
+                newtxt[idx] += w+' '
         return newtxt
 
                 
