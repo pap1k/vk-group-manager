@@ -19,10 +19,11 @@ class main:
                 os.mkdir("backups/")
             open("backups/"+filename, "w").write(json.dumps(savedata))
 
+            db.execute("UPDATE moders SET rebs = 0")
             db.execute("DELETE FROM counter")
             con.commit()
 
-            vk.api("messages.send", peer_id=peer, reply_to=mess['id'], message="Таблица статистики очещена")
+            vk.api("messages.send", peer_id=peer, reply_to=mess['id'], message="Таблица статистики и выговоры омдераторов очещены")
 
         else:
             vk.api("messages.send", peer_id=peer, reply_to=mess['id'], message="[BOT]\nВы не можете использовать эту команду")

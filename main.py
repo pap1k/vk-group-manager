@@ -44,9 +44,9 @@ def loop():
         except Exception as err:
             log(f'НЕОТЛОВЛЕННАЯ ОШИБКА {err}')
 
-t = Thread(target=loop)
-t.daemon = True
-t.start()
+# t = Thread(target=loop)
+# t.daemon = True
+# t.start()
 
 while True:
     try:
