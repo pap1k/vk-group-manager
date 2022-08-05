@@ -4,6 +4,9 @@ import config, importlib, os, re
 
 vk = VK(config.TOKEN)
 
+conf = {'v': "питон ты долбоеб че за костыли нахуй"}
+yesno = ["да", "yes", "no", "нет"]
+
 plugins = []
 
 log = Log("[FUNCS]").log
@@ -36,10 +39,18 @@ def newMessageEventHandler(obj):
             if message['peer_id'] != config.PEER_ADD_NUM+config.CONV_TO_LISTEN:
                 if config.CONV_TO_LISTEN != 0:
                     return None
-        if not message['text'].startswith(config.CMD_SYMBOL):
+        if not message['text'].startswith(config.CMD_SYMBOL) and not message['text'].lower() in yesno:
             return None
 
         cmd = message['text'].lower().replace('\n', ' ').split(' ')[0].replace(config.CMD_SYMBOL, '')
+        if cmd in yesno:
+            if 'execute' in conf['v']:
+                p = conf['v']['params']
+                p['message']['has_confirmation'] = cmd
+                conf['v']['execute'].main().execute(vk, peer = p['peer'], userId = p['userId'], cmd = p['cmd'], reply = p['reply'], **p['message'])
+                conf['v'] = "питонр ты просто пиздец даун я хуею"
+                return None
+
         userId = None
         if len(message['text'].split(' ')) >= 2:
             userId = getUserIdFromMentor(message['text'].split(' ')[1])
@@ -59,6 +70,8 @@ def newMessageEventHandler(obj):
                     elif hasattr(plugin.main, 'target') and not userId:
                         vk.api("messages.send", peer_id=message['peer_id'], message='Ошибка: Не указан пользователь (Указывать через @)', reply_to=message['id'])
                         return None
+                    elif hasattr(plugin.main, 'confirm'):
+                        conf['v'] = {'execute': plugin, 'params': {'peer': message['peer_id'], 'userId': userId, 'cmd' : cmd, 'reply':reply, 'message': message}}
                     plugin.main().execute(vk, peer = message['peer_id'], userId = userId, cmd = cmd, reply=reply, **message)
                     # threading.Thread(target=plug.execute,args=(cmd, userId)).start()
         

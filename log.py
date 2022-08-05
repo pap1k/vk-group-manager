@@ -10,7 +10,7 @@ class Log:
 
     def log(self, *args, createfile=False, **kwargs):
         curframe = inspect.currentframe()
-        calframe = inspect.getouterframes(curframe, 2)
+        calframe = inspect.getouterframes(curframe, 3)
         text = ""
         for v in args: text += "{}\t".format(v)
         if kwargs:
