@@ -23,7 +23,7 @@ class main:
             db.execute("DELETE FROM counter")
             con.commit()
 
-            vk.api("messages.send", peer_id=peer, reply_to=mess['id'], message="Таблица статистики и выговоры омдераторов очещены")
+            vk.api("messages.send", peer_id=peer, reply_to=mess['id'], message="Таблица статистики и выговоры модераторов очещены")
 
         else:
             vk.api("messages.send", peer_id=peer, reply_to=mess['id'], message="[BOT]\nВы не можете использовать эту команду")
