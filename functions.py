@@ -17,6 +17,8 @@ def loadCommands():
         if os.path.isfile('plugins/'+file) and '.py' in file and file not in ['utils.py', 'db.py']:
             plugin = importlib.import_module('plugins.'+file.replace('.py',''))
             if hasattr(plugin.main, "triggers"):
+                if not hasattr(plugin.main, "perm"):
+                    log(f"[WARN]Plugin {file.replace('.py','')} doesnt have PERM attribute")
                 plugins.append(plugin)
                 log(f"Загружен плагин "+file.replace('.py',''))
             else: log(f"Ошибка загрузки плагина "+file.replace('.py','')+" - отсутствует атрибут triggers")
@@ -66,7 +68,7 @@ def newMessageEventHandler(obj):
                     log(f'Словлена команда: {message["text"].lower() }')
                     reply = lambda txt: vk.api("messages.send", peer_id=message['peer_id'], reply_to=message['id'], message="[BOT]\n"+txt)
                     if hasattr(plugin.main, 'perm'):
-                        if not Perms.hasPerm(message['from_id'], plugin.main.perm):
+                        if not Perms.hasPerm(message['from_id'], plugin.main.perm, trigger):
                             return reply("Вы не можете использовать эту команду (perms)")
                     if cmd == "cmdlist":
                         plugin.main().execute(vk = vk, peer = message['peer_id'], plist = plugins, cmd = cmd, **message)

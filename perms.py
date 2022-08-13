@@ -24,7 +24,7 @@ class Perms:
                 return Perms.Event if userinfo[0][1] == 1 else Perms.Moder
             else:
                 return Perms.User
-    def hasPerm(vkid: int, perm: int) -> True | False:
+    def hasPerm(vkid: int, perm: int, trigger:str) -> True | False:
         p = Perms.getUserPerm(vkid)
-        log(vkid=vkid, p=p, perm=perm)
+        log(vkid=vkid, p=p, perm=perm, trigger=trigger)
         return p >= perm
