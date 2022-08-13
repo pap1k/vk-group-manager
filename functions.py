@@ -71,7 +71,7 @@ def newMessageEventHandler(obj):
                         if not Perms.hasPerm(message['from_id'], plugin.main.perm, trigger):
                             return reply("Вы не можете использовать эту команду (perms)")
                     if cmd == "cmdlist":
-                        plugin.main().execute(vk = vk, peer = message['peer_id'], plist = plugins, cmd = cmd, **message)
+                        plugin.main().execute(vk = vk, peer = message['peer_id'], plist = plugins, reply = reply, cmd = cmd, **message)
                         return None
                     elif hasattr(plugin.main, 'target') and not userId:
                         vk.api("messages.send", peer_id=message['peer_id'], message='Ошибка: Не указан пользователь (Указывать через @)', reply_to=message['id'])

@@ -4,7 +4,7 @@ from perms import Perms
 class main:
     triggers = [['getlog', 'Скидывает log.txt']]
     perm = Perms.Admin
-    def execute(self, _, reply, **mess):
+    def execute(self, reply, **mess):
         txt = open("log.txt", "r", encoding="utf-8").read().split('\n')
         text = '\n'.join(txt[-30:])
         words = mess['text'].split(" ")
