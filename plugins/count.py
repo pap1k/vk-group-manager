@@ -1,6 +1,7 @@
 from core import VK
 from plugins.db import cursor as db, con
 import config, datetime, time
+from perms import Perms
 
 def date(unixtime, format = '%d.%m.%Y %H:%M:%S'):
     d = datetime.datetime.fromtimestamp(unixtime)
@@ -19,7 +20,7 @@ def findModer(moders, id):
 
 class main:
     triggers = [['daycount', 'Позволяет запустить подсчет, в случае, если автоматический не сработал']]
-    
+    perm = Perms.Admin
     def count(self, vk : VK, peer, test = False):
         '''Подсчёт'''
         moders = db.execute("SELECT * FROM moders").fetchall()
@@ -149,14 +150,10 @@ class main:
         vk.api("messages.send", peer_id=peer, message=result)
 
     def execute(self, vk : VK, peer, **mess):
-        userinfo = db.execute("SELECT * FROM admins WHERE vk_id = ?", (mess['from_id'],))
-        if len(userinfo.fetchall()) == 1:
-            if len(mess['text'].split(' ')) > 1 and mess['text'].split(' ')[1] == "test":
-                self.count(vk, config.PEER_ADD_NUM + config.CONVERSATIONS['flood'], True)
-            else:
-                self.count(vk, config.PEER_ADD_NUM + config.CONVERSATIONS['new'])
+        if len(mess['text'].split(' ')) > 1 and mess['text'].split(' ')[1] == "test":
+            self.count(vk, config.PEER_ADD_NUM + config.CONVERSATIONS['flood'], True)
         else:
-            vk.api("messages.send", peer_id=peer, reply_to=mess['id'], message="[BOT]\nВы не можете использовать эту команду")
+            self.count(vk, config.PEER_ADD_NUM + config.CONVERSATIONS['new'])
 
 if __name__ == "__main__":
     main.count(VK(config.TOKEN), config.PEER_ADD_NUM + config.CONVERSATIONS['new'])

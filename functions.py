@@ -1,6 +1,7 @@
 from core import VK
 from log import Log
 import config, importlib, os, re
+from perms import Perms
 
 vk = VK(config.TOKEN)
 
@@ -47,7 +48,7 @@ def newMessageEventHandler(obj):
             if 'execute' in conf['v']:
                 p = conf['v']['params']
                 p['message']['has_confirmation'] = cmd
-                conf['v']['execute'].main().execute(vk, peer = p['peer'], userId = p['userId'], cmd = p['cmd'], reply = p['reply'], **p['message'])
+                conf['v']['execute'].main().execute(vk = vk, peer = p['peer'], userId = p['userId'], cmd = p['cmd'], reply = p['reply'], **p['message'])
                 conf['v'] = "питонр ты просто пиздец даун я хуею"
                 return None
 
@@ -64,14 +65,17 @@ def newMessageEventHandler(obj):
                 if cond:
                     log(f'Словлена команда: {message["text"].lower() }')
                     reply = lambda txt: vk.api("messages.send", peer_id=message['peer_id'], reply_to=message['id'], message="[BOT]\n"+txt)
+                    if hasattr(plugin.main, 'perm'):
+                        if not Perms.hasPerm(message['from_id'], plugin.main.perm):
+                            return reply("Вы не можете использовать эту команду (perms)")
                     if cmd == "cmdlist":
-                        plugin.main().execute(vk, peer = message['peer_id'], plist = plugins, cmd = cmd, **message)
+                        plugin.main().execute(vk = vk, peer = message['peer_id'], plist = plugins, cmd = cmd, **message)
                         return None
                     elif hasattr(plugin.main, 'target') and not userId:
                         vk.api("messages.send", peer_id=message['peer_id'], message='Ошибка: Не указан пользователь (Указывать через @)', reply_to=message['id'])
                         return None
                     elif hasattr(plugin.main, 'confirm'):
                         conf['v'] = {'execute': plugin, 'params': {'peer': message['peer_id'], 'userId': userId, 'cmd' : cmd, 'reply':reply, 'message': message}}
-                    plugin.main().execute(vk, peer = message['peer_id'], userId = userId, cmd = cmd, reply=reply, **message)
+                    plugin.main().execute(vk = vk, peer = message['peer_id'], userId = userId, cmd = cmd, reply=reply, **message)
                     # threading.Thread(target=plug.execute,args=(cmd, userId)).start()
         
