@@ -12,7 +12,7 @@ class main:
     triggers = [['list', 'Показывает список всех модеров, ивентов. Показывает кто в отпуске. Показывает выговоры']]
     perm = Perms.Admin
 
-    def execute(self, vk : VK, reply):
+    def execute(self, vk : VK, reply, **_):
         table = db.execute("SELECT * FROM moders").fetchall()
         vac = db.execute("SELECT vk_id FROM vacation")
         moders = []

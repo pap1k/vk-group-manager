@@ -12,7 +12,7 @@ class main:
     target = True
     perm = Perms.Admin
 
-    def execute(self, userId, cmd, reply):
+    def execute(self, userId, cmd, reply, **_):
         eventinfo = db.execute("SELECT * FROM reports WHERE vk_id = ?", (userId,)).fetchall()
         moderinfo = db.execute("SELECT money_left FROM moders WHERE vk_id = ?", (userId,)).fetchall()
         if len(eventinfo) > 0:

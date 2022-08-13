@@ -7,7 +7,7 @@ class main:
     triggers = [['reb', 'Выдает выговор модеру'], ['unreb', 'Снимает выговор модеру']]
     target = True
     perm = Perms.Admin
-    def execute(self, userId, cmd, reply):
+    def execute(self, userId, cmd, reply, **_):
         moderinfo = db.execute("SELECT rebs FROM moders WHERE vk_id = ?", (userId,)).fetchall()
         print(moderinfo)
         if len(moderinfo) > 0:

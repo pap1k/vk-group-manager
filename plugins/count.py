@@ -149,7 +149,7 @@ class main:
         con.commit()
         vk.api("messages.send", peer_id=peer, message=result)
 
-    def execute(self, vk : VK, peer, **mess):
+    def execute(self, vk : VK, **mess):
         if len(mess['text'].split(' ')) > 1 and mess['text'].split(' ')[1] == "test":
             self.count(vk, config.PEER_ADD_NUM + config.CONVERSATIONS['flood'], True)
         else:

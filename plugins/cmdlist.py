@@ -9,7 +9,7 @@ class main:
     triggers = [['cmdlist', 'Показывает список всех команд и их описание']]
     perm = Perms.Admin
 
-    def execute(self, reply, plist):
+    def execute(self, reply, plist, **_):
         txt = ""
         for plugin in plist:
             for trigger in plugin.main.triggers:

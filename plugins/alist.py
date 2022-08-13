@@ -5,7 +5,7 @@ from perms import Perms
 class main:
     triggers = [['alist', 'Показывает список всех админов']]
     perm = Perms.Admin
-    def execute(self, vk : VK, reply):
+    def execute(self, vk : VK, reply, **_):
         table = db.execute("SELECT * FROM admins").fetchall()
         admins = []
         for admin in table:
