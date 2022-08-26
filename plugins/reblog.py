@@ -1,4 +1,3 @@
-from core import VK
 from plugins.db import cursor as db
 from plugins.db import con
 from perms import Perms
@@ -10,24 +9,37 @@ def getUserIdFromMentor(txt):
         return int(found_id[0])
     return False
 
+def buildLog(info):
+    mess = ""
+    for reb in info:
+        addinfo = ""
+        dbinfo = db.execute("SELECT * FROM moders WHERE event = 1 AND vk_id = ?", (reb[1],)).fetchall()
+        if len(dbinfo) > 0:
+            addinfo = " [E]"
+        if reb[5]:
+            addinfo += " C: "+reb[5]
+        if reb[2] == 1: #выдача
+            mess = f"{reb[4]} [id{reb[3]}|Админ] ВЫДАЛ выговор [id{reb[1]}|модератору]{addinfo}\n" + mess
+        elif reb[2] == 0: #снятие
+            mess = f"{reb[4]} [id{reb[3]}|Админ] СНЯЛ выговор [id{reb[1]}|модератору]{addinfo}\n" + mess
+        else:
+            mess = f"Невозможно определить тип действия ({reb[2]}), id = {reb[0]}\n"  + mess
+    return mess
+
 class main:
     triggers = [['reblog', 'Показывает лог выговоров. Если упомнянуть модера, показывает только его выговоры']]
-
     perm = Perms.Admin
     def execute(self, userId, cmd, reply, **_):
-        moderinfo = db.execute("SELECT rebs FROM moders WHERE vk_id = ?", (userId,)).fetchall()
-        print(moderinfo)
-        if len(moderinfo) > 0:
-            act = 1 if cmd == 'reb' else -1
-            newrebs = int(moderinfo[0][0]) + 1*act
-            print(newrebs)
-            if newrebs < 0:
-                reply("Количество выговоров не может быть меньше 0")
-                return
-            
-            db.execute("UPDATE moders SET rebs = ? WHERE vk_id = ?", (newrebs,userId))
-            con.commit()
-            action = "выдали" if act == 1 else "сняли"
-            reply(f"Вы {action} выговор модератору. Статистика доступна в /list")
+        if userId:
+            moderinfo = db.execute("SELECT rebs FROM moders WHERE vk_id = ?", (userId,)).fetchall()
+            if len(moderinfo) > 0:
+                info = db.execute("SELECT * FROM rebs WHERE vk_id = ? ORDER BY id desc LIMIT 30 ", (userId,)).fetchall()
+            else:
+                return reply("Указанный пользователь не является модератором")
         else:
-            reply("Указанный пользователь не является модератором")
+            info = db.execute("SELECT * FROM rebs ORDER BY id desc LIMIT 30 ").fetchall()
+
+        mess = "Лог действий c выговорами\n\n"
+        mess += buildLog(info)
+        reply(mess)
+        
