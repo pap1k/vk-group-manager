@@ -13,6 +13,7 @@ class main:
             db.execute("CREATE TABLE IF NOT EXISTS admins   (vk_id INT NOT NULL, UNIQUE(vk_id))")
             db.execute("CREATE TABLE IF NOT EXISTS counter  (vk_id INT NOT NULL, posts INT DEFAULT 0, UNIQUE(vk_id))")
             db.execute("CREATE TABLE IF NOT EXISTS reports  (id INTEGER PRIMARY KEY AUTOINCREMENT, vk_id INT NOT NULL, prize INT DEFAULT 0, winner TEXT NOT NULL, date_of_report TEXT NOT NULL, photo_url TEXT NOT NULL, UNIQUE(id))")
+            db.execute("CREATE TABLE IF NOT EXISTS rebs     (id INTEGER PRIMARY KEY AUTOINCREMENT, vk_id INT NOT NULL, action INT DEFAULT 1, admin INT NOT NULL, date_of_reb TEXT NOT NULL, comment TEXT, UNIQUE(id))")
             con.commit()
             vk.api("messages.send", peer_id=peer, reply_to=mess['id'], message="+")
 

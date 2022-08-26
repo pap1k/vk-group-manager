@@ -22,7 +22,6 @@ class main:
                     os.mkdir("backups/")
                 open("backups/"+filename, "w").write(json.dumps(savedata))
 
-                db.execute("UPDATE moders SET rebs = 0")
                 db.execute("DELETE FROM counter")
                 con.commit()
 
