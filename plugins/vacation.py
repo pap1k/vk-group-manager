@@ -38,11 +38,11 @@ class main:
                 m = f"{name['first_name']} {name['last_name']} был отправлен в отпуск до {dates[1]} (на {days} {getDayCase(days)})"
                 reply(m)
             else:
-                reply(f"[BOT]\nУказанный пользователь уже находится в отпуске. Выдан {data[0][1]} до {data[0][2]}")
+                reply(f"Указанный пользователь уже находится в отпуске. Выдан {data[0][1]} до {data[0][2]}")
         else:
             if len(data) == 0:
                 reply("nУказанный пользователь не находится в отпуске")
             else:
                 db.execute("DELETE FROM vacation WHERE vk_id = ?", (mess['userId'],))
-                reply(f"[BOT]\nМодер {name['first_name']} {name['last_name']} убран из отпуска.")
+                reply(f"Модер {name['first_name']} {name['last_name']} убран из отпуска.")
         con.commit()
