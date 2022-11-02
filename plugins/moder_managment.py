@@ -53,7 +53,7 @@ class main:
         else:
             if len(data) > 0:
                 db.execute("DELETE FROM moders WHERE vk_id=?", (mess['userId'],))
-                m = f"[BOT]\n{name['first_name']} {name['last_name']} снят с поста модера в боте"
+                m = f"{name['first_name']} {name['last_name']} снят с поста модера в боте"
                 if isModer:
                     if not "-dev" in sys.argv:
                         vk.api("groups.editManager", group_id=config.GROUP_ID, user_id=mess['userId'])

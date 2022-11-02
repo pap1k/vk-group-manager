@@ -23,7 +23,7 @@ class main:
             if len(data) == 0:
                 db.execute("UPDATE moders SET event = 1 WHERE vk_id = ?", (mess['userId'],))
 
-                m = f"[BOT]\n{name['first_name']} {name['last_name']} назначен ивент-модером"
+                m = f"{name['first_name']} {name['last_name']} назначен ивент-модером"
 
                 r = vk.api("messages.addChatUser", chat_id=config.CONVERSATIONS['events'], user_id=mess['userId'])
                 if not r:
@@ -38,7 +38,7 @@ class main:
             if len(data) > 0:
                 db.execute("UPDATE moders SET event = 0 WHERE vk_id = ?", (mess['userId'],))
 
-                m = f"[BOT]\n{name['first_name']} {name['last_name']} снят с поста ивент-модера в боте"
+                m = f"{name['first_name']} {name['last_name']} снят с поста ивент-модера в боте"
 
                 r = vk.api("messages.removeChatUser", chat_id=config.CONVERSATIONS['events'], user_id=mess['userId'])
                 if not r:
