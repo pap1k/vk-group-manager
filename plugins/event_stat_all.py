@@ -33,6 +33,7 @@ class main:
             c = 0
             for userId in reportTable:
                 result += f"[id{userId}|{names[c]['first_name']} {names[c]['last_name']}]:\n>> Всего потрачено: {reportTable[userId]['spent']}\n>> Всего отчетов: {reportTable[userId]['count']}\n>> Остаток средств: {reportTable[userId]['money']}\n=================\n\n"
+                c+=1
 
             reply(result)
 
