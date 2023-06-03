@@ -1,4 +1,5 @@
 import datetime
+from core import VK
 from plugins.db import cursor as db
 from plugins.db import con
 from perms import Perms
@@ -8,11 +9,10 @@ def date(unixtime, format = '%d.%m.%Y %H:%M:%S'):
     return d.strftime(format)
 
 class main:
-    triggers = [['elog', 'Показывает подробную статистику отчетов ивент модера на текущий момент']]
-    target = False
+    triggers = [['elog', 'Показывает общий лог работы всех ивентов']]
     perm = Perms.Admin
 
-    def execute(self, cmd, reply, **_):
+    def execute(self, vk : VK, cmd, reply, **_):
         reports = db.execute("SELECT * FROM reports").fetchall()
         result = "Краткий отчет по всем модерам:\n"
 
@@ -26,7 +26,15 @@ class main:
                 else:
                     moderinfo = db.execute("SELECT money_left FROM moders WHERE vk_id = ?", (report[1],)).fetchall()
                     reportTable[report[1]] = {}
+                    reportTable[report[1]]['spent'] = report[2]
+                    reportTable[report[1]]['count'] = 1
                     reportTable[report[1]]['money'] = moderinfo[0][0]
-            print(reportTable)
+            names = vk.api("users.get", user_ids=','.join(map(str, list(reportTable))))
+            c = 0
+            for userId in reportTable:
+                result += f"[id{userId}|{names[c]['first_name']} {names[c]['last_name']}]:\nВсего потрачено: {reportTable[userId]['spent']}\nВсего отчетов: {reportTable[userId]['count']}\nОстаток средств: {reportTable[userId]['money']}\n\n"
+
+            reply(result)
+
         else:
             reply("В базе нет ни одного отчета")

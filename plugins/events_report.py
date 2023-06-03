@@ -35,8 +35,8 @@ class main:
         if report_data['sum'] <= 0:
             return self.reply("Сумма не может быть <= 0")
 
-        if report_data['sum'] > userinfo[0][3]:
-            return self.reply(f"По данным бота у остаток ваших средств - {userinfo[0][3]}, а вы хотите сдать отчет с суммой {report_data['sum']}. Если это ошибка, обратитесь к админам группы.")
+        # if report_data['sum'] > userinfo[0][3]:
+        #     return self.reply(f"По данным бота у остаток ваших средств - {userinfo[0][3]}, а вы хотите сдать отчет с суммой {report_data['sum']}. Если это ошибка, обратитесь к админам группы.")
 
         #Получаем ссылку на фотку
         attach = mess['attachments'][0]

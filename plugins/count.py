@@ -109,17 +109,17 @@ class main:
         for name in not_post_names:
             result += f"║{name['first_name']} {name['last_name']} - {moders_days[name['id']]} {getDayCase(moders_days[name['id']])}\n"
 
-        result +=  "║*********************************\n"
+        result +=  "║*******************************\n"
         result +=  "║ > Статистика модераторов:\n"
-        result +=  "║*********************************\n"
+        result +=  "║*******************************\n"
         result += f"║Всего модераторов: {len(moders_days)}\n"
         result += f"║Не рабочих: {len(not_post_ids)}\n"
         result += f"║Сегодня делали посты: {len(creators)}\n"
         result += f"║В отпуске: {len(vac)}\n"
-        result +=  "║*********************************\n"
+        result +=  "║*******************************\n"
         if len(vac) > 0:
             result +=  "║ > Модераторы в отпуске:\n"
-            result +=  "║*********************************\n"
+            result +=  "║*******************************\n"
 
             vac_end = []
             for u in dbvac:
@@ -141,7 +141,7 @@ class main:
                     db.execute("DELETE FROM vacation WHERE vk_id = ?", (id,))
 
         result += "║ > Фильтр постов за сегодня:\n"
-        result +=  "║*********************************\n"
+        result +=  "║*******************************\n"
         for h in hashs:
             result += f"║{h} - {hashs[h]}\n"
         result += "╚══════════════════"
