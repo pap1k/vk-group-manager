@@ -32,7 +32,7 @@ class main:
             names = vk.api("users.get", user_ids=','.join(map(str, list(reportTable))))
             c = 0
             for userId in reportTable:
-                result += f"[id{userId}|{names[c]['first_name']} {names[c]['last_name']}]:\nВсего потрачено: {reportTable[userId]['spent']}\nВсего отчетов: {reportTable[userId]['count']}\nОстаток средств: {reportTable[userId]['money']}\n\n"
+                result += f"[id{userId}|{names[c]['first_name']} {names[c]['last_name']}]:\n>> Всего потрачено: {reportTable[userId]['spent']}\n>> Всего отчетов: {reportTable[userId]['count']}\n>> Остаток средств: {reportTable[userId]['money']}\n=================\n\n"
 
             reply(result)
 
