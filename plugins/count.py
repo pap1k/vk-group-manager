@@ -1,4 +1,5 @@
 from core import VK
+import sys
 from plugins.db import cursor as db, con
 import config, datetime, time
 from perms import Perms
@@ -154,6 +155,3 @@ class main:
             self.count(vk, config.PEER_ADD_NUM + config.CONVERSATIONS['flood'], True)
         else:
             self.count(vk, config.PEER_ADD_NUM + config.CONVERSATIONS['new'])
-
-if __name__ == "__main__":
-    main.count(VK(config.TOKEN), config.PEER_ADD_NUM + config.CONVERSATIONS['new'])
