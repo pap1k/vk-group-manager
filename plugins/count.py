@@ -1,5 +1,4 @@
 from core import VK
-import sys
 from plugins.db import cursor as db, con
 import config, datetime, time
 from perms import Perms
