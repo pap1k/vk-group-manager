@@ -1,7 +1,5 @@
 *.db
 __pycache__/
 backups/
-config.py
-env/
-
+.env
 log.txt
