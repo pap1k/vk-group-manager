@@ -160,7 +160,8 @@ class LongPoll:
                     logLP("Бот слушает обновления")
                     first = False
 
-                resp = requests.get(f"{self.server}?act=a_check&key={self.key}&ts={self.ts}&wait={self.wait}").json()
+                url = f"{self.server}?act=a_check&key={self.key}&ts={self.ts}&wait={self.wait}"
+                resp = requests.get(url).json()
                 if 'failed' in resp:
                     if resp['failed'] == 1:
                         self.ts = resp['ts']
