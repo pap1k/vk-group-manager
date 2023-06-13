@@ -1,6 +1,5 @@
 from core import VK
 from plugins.db import cursor as db, con
-import config
 from perms import Perms
 
 class main:
@@ -23,13 +22,7 @@ class main:
             if len(data) == 0:
                 db.execute("UPDATE moders SET event = 1 WHERE vk_id = ?", (mess['userId'],))
 
-                m = f"{name['first_name']} {name['last_name']} назначен ивент-модером"
-
-                r = vk.api("messages.addChatUser", chat_id=config.CONVERSATIONS['events'], user_id=mess['userId'])
-                if not r:
-                    m += "\n Ошибка приглашения в Event Chat"
-
-                reply(m)
+                reply(f"{name['first_name']} {name['last_name']} назначен ивент-модером")
             else:
                 reply("Указанный пользователь уже является ивент-модером")
 
@@ -38,13 +31,7 @@ class main:
             if len(data) > 0:
                 db.execute("UPDATE moders SET event = 0 WHERE vk_id = ?", (mess['userId'],))
 
-                m = f"{name['first_name']} {name['last_name']} снят с поста ивент-модера в боте"
-
-                r = vk.api("messages.removeChatUser", chat_id=config.CONVERSATIONS['events'], user_id=mess['userId'])
-                if not r:
-                    m += "\n Ошибка исключения из Event Chat"
-
-                reply(m)
+                reply(f"{name['first_name']} {name['last_name']} снят с поста ивент-модера в боте")
             else:
                 reply("Указанный пользователь не является ивент-модером")
 

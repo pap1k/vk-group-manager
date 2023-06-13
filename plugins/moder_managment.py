@@ -45,10 +45,11 @@ class main:
                 if not r:
                     m += "\n Ошибка приглашения в New Chat"
 
-                vk.api("messages.send", peer_id=peer, reply_to=mess['id'], message=m)
+                reply(m)
             
             else:
-                vk.api("messages.send", peer_id=peer, reply_to=mess['id'], message="[BOT]\nУказанный пользователь уже является модером")
+                reply("Указанный пользователь уже является модером")
+
         #Снятие с поста модера
         else:
             if len(data) > 0:
@@ -67,9 +68,6 @@ class main:
                 r = vk.api("messages.removeChatUser", chat_id=config.CONVERSATIONS['new'], user_id=mess['userId'])
                 if not r:
                     m += "\n Ошибка исключения из New Chat"
-                r = vk.api("messages.removeChatUser", chat_id=config.CONVERSATIONS['events'], user_id=mess['userId'])
-                if not r:
-                    m += "\n Ошибка исключения из Event Chat"
                 
                 reply(m)
             else:
