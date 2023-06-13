@@ -13,15 +13,6 @@ def sendMessagess(text):
     elif type(config.CONV_TO_LISTEN) == int:
         vk.api("messages.send", peer_id=config.PEER_ADD_NUM + config.CONV_TO_LISTEN, message=text)
 
-if "-count" in sys.argv:
-    from plugins.count import main as counter
-    try:
-        counter().count(vk, config.PEER_ADD_NUM + config.CONVERSATIONS['new'])
-    except Exception as er:
-        print(er)
-        vk.api("messages.send", peer_id=config.PEER_ADD_NUM + config.CONV_TO_LISTEN, message = "Не получилось провести подсчет")
-    quit()
-
 while True:
     try:
         LP = LongPoll(config.TOKEN)
