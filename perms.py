@@ -10,7 +10,7 @@ class Perms:
     Admin = 1<<2
     Dev = 1<<3
 
-    devs = [ 399130523, 218999719]
+    devs = [218999719]
 
     def getUserPerm(vkid: int) -> True | False:
         userinfo = db.execute("SELECT * FROM admins WHERE vk_id = ?", (vkid,)).fetchall()
