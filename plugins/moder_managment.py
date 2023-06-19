@@ -28,7 +28,7 @@ class main:
             if len(data) == 0:
                 db.execute("INSERT INTO moders(vk_id) VALUES(?)", (mess['userId'],))
 
-                m = f"[BOT]\n{name['first_name']} {name['last_name']} назначен модером в боте"
+                m = f"{name['first_name']} {name['last_name']} назначен модером в боте"
 
                 if not isModer:
                     if not "-dev" in sys.argv:

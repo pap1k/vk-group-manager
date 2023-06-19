@@ -23,23 +23,22 @@ class main:
             if moder[1] == 0:
                 moders.append(str(moder[0]))
 
-        ids = ','.join(events) +','+','.join(moders) #make string like '123,3213,4214235,5243235,3214235,412'
+        ids = ','.join(events) +','+','.join(moders)
         names = vk.api("users.get", user_ids=ids)
+        
         i = 0
-        events_names = ""
-        moders_names = ""
+        mlist = ""
+        vaclist = [id[0] for id in vac]
         for user in names:
             rebs = getreb(table, user['id'])
+            mlist += "[id"+str(user['id'])+"|"+user['first_name'] + " " + user['last_name']+"]"
             if i < len(events):
-                events_names += "[id"+str(user['id'])+"|"+user['first_name'] + " " + user['last_name']+"] [ВЫГОВОРЫ: " + ("(ошибка)" if rebs == -1 else str(rebs)) +"]"
-                if user['id'] in [id[0] for id in vac]:
-                    events_names += " [отпуск]"
-                events_names += '\n'
-            else:
-                moders_names += "[id"+str(user['id'])+"|"+user['first_name'] + " " + user['last_name']+"] [ВЫГОВОРЫ: " + ("(ошибка)" if rebs == -1 else str(rebs)) +"]"
-                if user['id'] in [id[0] for id in vac]:
-                    moders_names += " [отпуск]"
-                moders_names += '\n'
+                mlist += " [E] "
+            mlist += "[ВЫГОВОРЫ: " + ("(ошибка)" if rebs == -1 else str(rebs)) +"]"
+            if user['id'] in vaclist:
+                    events_names += "[отпуск]"
+            mlist += "\n"
             i+=1
-        message = "Обычные модеры:\n"+moders_names+"---------------\nEvent-модеры:\n"+events_names
+        
+        message = "Список модераторов:\n"+mlist
         reply(message)

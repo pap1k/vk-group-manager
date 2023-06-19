@@ -3,8 +3,8 @@ class FieldType:
     INT = "INT"
 
 class Field:
-    name = []
-    type = []
+    name = ""
+    type : FieldType = ""
     notNull = False
     default = ""
 
