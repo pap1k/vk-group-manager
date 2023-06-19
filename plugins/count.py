@@ -24,6 +24,7 @@ class main:
     def count(self, vk : VK, peer, test = False):
         '''Подсчёт'''
         moders = db.execute("SELECT * FROM moders").fetchall()
+        events = [id[0] for id in db.execute("SELECT * FROM moders WHERE event = 1").fetchall()]
         dbvac = db.execute("SELECT * FROM vacation").fetchall()
         vac = [id[0] for id in dbvac]
         moders_days = {}
@@ -71,7 +72,7 @@ class main:
                     creators[post['created_by']] += 1
         
         for moder in moders_days:
-            if moder not in creators and moder not in vac:
+            if moder not in creators and moder not in vac and moder not in events:
                 moders_days[moder] += 1
                 if not test:
                     db.execute(f"UPDATE moders SET days_without_posts = {moders_days[moder]} WHERE vk_id = {moder}")
@@ -151,6 +152,6 @@ class main:
 
     def execute(self, vk : VK, **mess):
         if len(mess['text'].split(' ')) > 1 and mess['text'].split(' ')[1] == "test":
-            self.count(vk, config.PEER_ADD_NUM + config.CONVERSATIONS['flood'], True)
+            self.count(vk, mess['peer_id'], True)
         else:
             self.count(vk, config.PEER_ADD_NUM + config.CONVERSATIONS['new'])
