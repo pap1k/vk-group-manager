@@ -8,12 +8,11 @@ log = Log("[MAIN]").log
 
 def sendStartAnnounce(text):
     if type(config.CONV_TO_LISTEN) == list:
-        for conv in config.CONV_TO_LISTEN:
-            vk.api("messages.send", peer_id=config.PEER_ADD_NUM + conv, message = text)
+        vk.api("messages.send", peer_id=config.PEER_ADD_NUM + config.CONV_TO_LISTEN[0], message = text)
     elif type(config.CONV_TO_LISTEN) == int:
         vk.api("messages.send", peer_id=config.PEER_ADD_NUM + config.CONV_TO_LISTEN, message=text)
 
-startinfo = "Запускается...."
+startinfo = "[BOT]\nЗапускается...."
 while True:
     try:
         LP = LongPoll(config.TOKEN)
@@ -22,7 +21,7 @@ while True:
 
         log("Started", createfile=True)
         sendStartAnnounce(startinfo+"\nУспешный запуск")
-        
+
         LP.run()
     except KeyboardInterrupt:
         break
