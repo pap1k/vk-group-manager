@@ -31,12 +31,11 @@ class main:
         vaclist = [id[0] for id in vac]
         for user in names:
             rebs = getreb(table, user['id'])
-            mlist += "[id"+str(user['id'])+"|"+user['first_name'] + " " + user['last_name']+"] "
             if i < len(events):
                 mlist += "[E] "
-            mlist += "[ВЫГОВОРЫ: " + ("(ошибка)" if rebs == -1 else str(rebs)) +"]"
+            mlist += "[id"+str(user['id'])+"|"+user['first_name'] + " " + user['last_name']+"] [ВЫГОВОРЫ: " + ("(ошибка)" if rebs == -1 else str(rebs)) +"]"
             if user['id'] in vaclist:
-                    events_names += "[отпуск]"
+                    mlist += "[отпуск]"
             mlist += "\n"
             i+=1
         
