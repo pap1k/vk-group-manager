@@ -66,10 +66,11 @@ class main:
                         hashs[post_hash] += 1
                     else:
                         nohash += 1
-                if post['created_by'] not in creators:
-                    creators[post['created_by']] = 1
-                else:
-                    creators[post['created_by']] += 1
+                    if post_hash != "#ccevents":
+                        if post['created_by'] not in creators:
+                            creators[post['created_by']] = 1
+                        else:
+                            creators[post['created_by']] += 1
         
         for moder in moders_days:
             if moder not in creators and moder not in vac and moder not in events:
