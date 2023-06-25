@@ -14,7 +14,7 @@ class main:
         if len(vaclist) > 0:
             mess = "Список модеров в отпуске:\n\n"
             for moder in vaclist:
-                mess += f"[id{moder[0]}|Модератор] в отпуске С [{moder[1]}] ПО [{moder[1]}]\n"
+                mess += f"[id{moder[0]}|Модератор] в отпуске С [{moder[1]}] ПО [{moder[2]}]\n"
             reply(mess)
         else:
             reply("Список модеров в отпуске пуст")
