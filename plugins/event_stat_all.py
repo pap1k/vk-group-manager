@@ -26,9 +26,9 @@ class main:
                 else:
                     moderinfo = db.execute("SELECT money_left FROM moders WHERE vk_id = ?", (report[1],)).fetchall()
                     reportTable[report[1]] = {}
+                    reportTable[report[1]]['money'] = "0 (не является модером)" if len(moderinfo) == 0 else moderinfo[0][0]
                     reportTable[report[1]]['spent'] = report[2]
                     reportTable[report[1]]['count'] = 1
-                    reportTable[report[1]]['money'] = moderinfo[0][0]
             names = vk.api("users.get", user_ids=','.join(map(str, list(reportTable))))
             c = 0
             for userId in reportTable:

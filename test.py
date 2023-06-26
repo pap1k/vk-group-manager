@@ -1,8 +1,18 @@
 from orm import Entity, Types
+from log import Log
 
-class Moder(Entity):
-    vkid : int = 0
+logger = Log("[TEST]").log
+
+
+
+class Test:
     def __init__(self):
-        print("Init moder")
+        x = []
+        x + 1
+        logger("гамарджоба")
 
-m = Moder()
+try:
+    t = Test()
+except Exception as e:
+    logger(f"Ошибка {e}",isCrash=True)
+# t = Test()

@@ -202,22 +202,14 @@ class LongPoll:
                                     try:
                                         listener[1](obj)
                                     except Exception as e:
-                                        logLP(f"Проблема с обработкой сообщения листенером: {e}")
-                                        
-
-                                # print(f'Сообщение: {mess}')
-                                # threading.Thread(target=listener[1], args=(obj,)).start()
+                                        logLP(f"Проблема с обработкой сообщения листенером: {e}", isCrash=True)
                             else:
-                                # threading.Thread(target=listener[1], args=(upd['object'],)).start()
                                 listener[1](upd['object'])
                                         
             except KeyboardInterrupt:
                 self.stop()
             except requests.exceptions.ConnectionError:
                 logLP('Соединение отвалилось, пробуем снова')
-
-            # except Exception as e:
-            #     print("Uncatchable exception: ", e)
 
     def stop(self):
         logLP("Stopping LongPoll")
