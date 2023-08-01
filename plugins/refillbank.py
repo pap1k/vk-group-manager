@@ -10,7 +10,6 @@ def date(unixtime, format = '%d.%m.%Y %H:%M:%S'):
 
 class main:
     triggers = [['refillbank', 'Устанавливает всем модерам'], ['rebank', "Аналог"]]
-    target = True
     perm = Perms.Admin
 
     def execute(self, reply, cmd, userId, **mess):
@@ -21,6 +20,6 @@ class main:
         s = int(mess['text'].split(' ')[1].strip())
         if not s and s != 0:
             return reply("Укажите сумму (число)")
-        db.execute("UPDATE moders SET money_left = ?", (s, userId))
+        db.execute("UPDATE moders SET money_left = ?", (s,))
         reply(f"Вы установили остаток средств = {s} для всех ивент модеров")
         con.commit()
