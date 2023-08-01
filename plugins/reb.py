@@ -23,7 +23,7 @@ class main:
             if len(message['text'].split(' ')) > 2:
                 db.execute("INSERT INTO rebs(vk_id, admin, action, date_of_reb, comment) VALUES(?,?,?,?,?)", (userId, message['from_id'], (act if act == 1 else 0), date(time.time()), ' '.join(message['text'].split(' ')[2:])))
             else:
-                db.execute("INSERT INTO rebs(vk_id, admin, action, date_of_reb) VALUES(?,?,?,?)", (userId, message['from_id'], (act if act == 1 else 0), date(time.time())))
+                return reply("/reb [id] [причина]")
             db.execute("UPDATE moders SET rebs = ? WHERE vk_id = ?", (newrebs,userId))
             con.commit()
             action = "выдали" if act == 1 else "сняли"
