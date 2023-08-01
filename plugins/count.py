@@ -88,7 +88,7 @@ class main:
                 db.execute("UPDATE counter SET posts = posts + "+str(creators[creator])+" WHERE vk_id = ?", (creator,))
         
         mydate = date(time.time()-500, "%d.%m.%Y")
-        result = "╔══════"+mydate+"══════\n"
+        result = "#подсчет\n╔══════"+mydate+"══════\n"
         if test: result += "-------->TEST MODE<---------\n"
         result += f"║ > Всего опубликовано постов [{count}]:\n"
         result +=  "║*********************************\n"
