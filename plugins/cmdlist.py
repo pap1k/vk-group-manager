@@ -12,13 +12,14 @@ class main:
     def execute(self, reply, plist, **message):
         txt = ""
         for plugin in plist:
-            if Perms.hasPerm(message['from_id'], self.perm, self.triggers):
-                for trigger in plugin.main.triggers:
-                    if type(trigger) == list:
-                        txt += f"[id0|/{trigger[0]}] : {trigger[1]}"
-                    else:
-                        txt += f"[id0|/{trigger}]"
-                    txt += "\n"
+            if hasattr(plugin.main, "perm"):
+                if Perms.hasPerm(message['from_id'], plugin.main.perm, ""):
+                    for trigger in plugin.main.triggers:
+                        if type(trigger) == list:
+                            txt += f"[id0|/{trigger[0]}] : {trigger[1]}"
+                        else:
+                            txt += f"[id0|/{trigger}]"
+                        txt += "\n"
         if txt == "":
             txt = "У вас нет доступных команд"
         reply(txt)
