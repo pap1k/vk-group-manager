@@ -1,6 +1,6 @@
 from core import VK
 from log import Log
-import config, importlib, os, re
+import config, importlib, os, re, argparser
 from perms import Perms
 
 vk = VK(config.TOKEN)
@@ -61,6 +61,7 @@ def newMessageEventHandler(obj):
         for plugin in plugins:
             for trigger in plugin.main.triggers:
                 
+                arglist = []
                 cond = cmd == trigger
                 if type(trigger) == list:
                     cond = cmd == trigger[0]
@@ -77,7 +78,19 @@ def newMessageEventHandler(obj):
                         vk.api("messages.send", peer_id=message['peer_id'], message='Ошибка: Не указан пользователь (Указывать через @)', reply_to=message['id'])
                         return None
                     elif hasattr(plugin.main, 'confirm'):
-                        conf['v'] = {'execute': plugin, 'params': {'peer': message['peer_id'], 'userId': userId, 'cmd' : cmd, 'reply':reply, 'message': message}}
-                    plugin.main().execute(vk = vk, peer = message['peer_id'], userId = userId, cmd = cmd, reply=reply, **message)
-                    # threading.Thread(target=plug.execute,args=(cmd, userId)).start()
+                        conf['v'] = {'execute': plugin, 'params': {'peer': message['peer_id'], 'userId': userId, 'cmd' : cmd, 'reply':reply, 'message': message, 'arglist': arglist}}
+                    elif hasattr(plugin.main, 'arglist'):
+                        res, args = argparser.parse(message['text'], plugin.main.arglist)
+                        if not res:
+                            err = ""
+                            for i in range(len(plugin.main.arglist)):
+                                if args[i] == None:
+                                    err += f"Параметр {i+1} ожидается как {plugin.main.arglist[i]}\n"
+                            if hasattr(plugin.main, 'hint'):
+                                err += "\n\n"+plugin.main.hint
+                            vk.api("messages.send", peer_id=message['peer_id'], message='Ошибка в наборе параметров:\n'+err, reply_to=message['id'])
+                            return None
+                        else:
+                            arglist = args
+                    plugin.main().execute(vk = vk, peer = message['peer_id'], userId = userId, cmd = cmd, reply=reply, arglist=arglist, **message)
         

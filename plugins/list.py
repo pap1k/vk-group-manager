@@ -8,6 +8,12 @@ def getreb(table, uid):
             return user[4]
     return -1
 
+def getnick(table, uid):
+    for user in table:
+        if str(user[0]) == str(uid):
+            return user[5]
+    return None
+
 class main:
     triggers = [['list', 'Показывает список всех модеров, ивентов. Показывает кто в отпуске. Показывает выговоры']]
     perm = Perms.Admin
@@ -31,9 +37,12 @@ class main:
         vaclist = [id[0] for id in vac]
         for user in names:
             rebs = getreb(table, user['id'])
+            nick = getnick(table, user['id'])
+            if nick == None:
+                nick = "Не указан ник"
             if i < len(events):
                 mlist += "[E] "
-            mlist += "[id"+str(user['id'])+"|"+user['first_name'] + " " + user['last_name']+"] [ВЫГОВОРЫ: " + ("(ошибка)" if rebs == -1 else str(rebs)) +"]"
+            mlist += "[id"+str(user['id'])+"|"+user['first_name'] + " " + user['last_name']+f"] ({nick}) [ВЫГОВОРЫ: " + ("(ошибка)" if rebs == -1 else str(rebs)) +"]"
             if user['id'] in vaclist:
                     mlist += "[отпуск]"
             mlist += "\n"

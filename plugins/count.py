@@ -9,7 +9,7 @@ def date(unixtime, format = '%d.%m.%Y %H:%M:%S'):
 
 def getDayCase(num):
     if str(num)[-1] == "1": return "день"
-    elif int(str(num)[:1]) in range(5,10) or str(num)[-1] == "0": return "дней"
+    elif int(str(num)[:1]) in range(6,10) or str(num)[-1] == "0": return "дней"
     else: return "дня"
 
 def findModer(moders, id):
