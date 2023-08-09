@@ -19,31 +19,34 @@ def parse(message : str, arglist : list) -> tuple[bool, list]:
         params = message.split(' ')
 
     toreturn = [None] * len(arglist)
-    for i in range(len(arglist)):
-        if arglist[i] == NUMBER:
-            if params[i].isnumeric():
-                toreturn[i] = int(params[i])
-            else:
-                toreturn[i] = None
-        elif arglist[i] == POSITIVE_NUMBER:
-            if params[i].isnumeric() and int(params[i]) >= 0:
-                toreturn[i] = int(params[i])
-            else:
-                toreturn[i] = None
-        elif arglist[i] == STRING:
-            if params[i] != " ":
-                  toreturn[i] = params[i]
-            else:
-                toreturn[i] = None
-        elif arglist[i] == USER:
-            id = getUserIdFromMentor(params[i])
-            if id:
-                toreturn[i] = id
-            else:
-                toreturn[i] = None
+    try:
+        for i in range(len(arglist)):
+            if arglist[i] == NUMBER:
+                if params[i].isnumeric():
+                    toreturn[i] = int(params[i])
+                else:
+                    toreturn[i] = None
+            elif arglist[i] == POSITIVE_NUMBER:
+                if params[i].isnumeric() and int(params[i]) >= 0:
+                    toreturn[i] = int(params[i])
+                else:
+                    toreturn[i] = None
+            elif arglist[i] == STRING:
+                if params[i] != " ":
+                    toreturn[i] = params[i]
+                else:
+                    toreturn[i] = None
+            elif arglist[i] == USER:
+                id = getUserIdFromMentor(params[i])
+                if id:
+                    toreturn[i] = id
+                else:
+                    toreturn[i] = None
 
-        else:
-            return None
+            else:
+                return None
+    except Exception:
+        pass
     try:
         toreturn.index(None)
         return False, toreturn
