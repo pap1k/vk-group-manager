@@ -12,7 +12,7 @@ class main:
     def execute(self, reply, plist, **message):
         txt = ""
         for plugin in plist:
-            if Perms.hasPerm(message['from_id'], plugin.main.perm, trigger):
+            if Perms.hasPerm(message['from_id'], self.perm, self.triggers):
                 for trigger in plugin.main.triggers:
                     if type(trigger) == list:
                         txt += f"[id0|/{trigger[0]}] : {trigger[1]}"
