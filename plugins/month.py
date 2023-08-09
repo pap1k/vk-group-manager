@@ -29,6 +29,12 @@ def getPostCase(num):
     elif int(str(num)[-1]) in range(6,10) or str(num)[-1] == "0": return "постов"
     else: return "поста"
 
+def isModerAdmin(id, admins):
+    for admin in admins:
+        if admin[0] == int(id):
+            return True
+    return False
+
 class main:
     triggers = [['stat', 'Формирует отчет по работе модеров с момента последней чистки через /flush.']]
     perm = Perms.Admin
@@ -41,6 +47,8 @@ class main:
 
         moders = db.execute("SELECT * FROM moders").fetchall()
 
+        admins = db.execute("SELECT * FROM admins").fetchall()
+
         #Подсчет за посты
         reportmsg += "За количество постов:\n"
         counter = db.execute("SELECT * FROM counter").fetchall()
@@ -49,6 +57,8 @@ class main:
         names = vk.api("users.get", user_ids=",".join(ids))
 
         for i in range(len(counter)):
+            if isModerAdmin(counter[i][0], admins):
+                continue
             posts = int(counter[i][1])
             zp_per_10 = posts//10 * arglist[0]
             zp = arglist[1]*posts if zp_per_10 == 0 else zp_per_10
@@ -79,6 +89,8 @@ class main:
         names = vk.api("users.get", user_ids=','.join(map(str, list(reportTable))))
         c = 0
         for userId in reportTable:
+            if isModerAdmin(userId, admins):
+                continue
             zp = reportTable[userId]['count'] * arglist[2]
             reportmsg+= f"{names[c]['first_name']} {names[c]['last_name']}: {reportTable[userId]['count']} мп -> {zp}$"
             if arglist[3] != 0:
