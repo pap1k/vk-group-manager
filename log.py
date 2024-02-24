@@ -30,7 +30,7 @@ class Log:
                 else:
                     text += f"{frame.function}({frame.lineno}){context}\n"
                 i+=1
-        if "-dev" in sys.argv:
+        if "-dev" in sys.argv or '-log' in sys.argv:
             print(text)
         if createfile:
             open("log.txt", "w")

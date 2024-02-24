@@ -4,6 +4,7 @@ import config, importlib, os, re, argparser
 from perms import Perms
 
 vk = VK(config.TOKEN)
+vk_user = VK(config.USER_TOKEN)
 
 conf = {'v': "питон ты долбоеб че за костыли нахуй"}
 yesno = ["да", "yes", "no", "нет"]
@@ -72,13 +73,13 @@ def newMessageEventHandler(obj):
                         if not Perms.hasPerm(message['from_id'], plugin.main.perm, trigger):
                             return reply("Вы не можете использовать эту команду (perms)")
                     if cmd == "cmdlist":
-                        plugin.main().execute(vk = vk, peer = message['peer_id'], plist = plugins, reply = reply, cmd = cmd, **message)
+                        plugin.main().execute(vk = vk, peer = message['peer_id'], plist = plugins, reply = reply, cmd = cmd, uservk = vk_user, **message)
                         return None
                     elif hasattr(plugin.main, 'target') and not userId:
                         vk.api("messages.send", peer_id=message['peer_id'], message='Ошибка: Не указан пользователь (Указывать через @)', reply_to=message['id'])
                         return None
                     elif hasattr(plugin.main, 'confirm'):
-                        conf['v'] = {'execute': plugin, 'params': {'peer': message['peer_id'], 'userId': userId, 'cmd' : cmd, 'reply':reply, 'message': message, 'arglist': arglist}}
+                        conf['v'] = {'execute': plugin, 'params': {'peer': message['peer_id'], 'userId': userId, 'cmd' : cmd, 'reply':reply, 'message': message, 'arglist': arglist, 'uservk': vk_user}}
                     elif hasattr(plugin.main, 'arglist'):
                         res, args = argparser.parse(message['text'], plugin.main.arglist)
                         if not res:
@@ -92,5 +93,5 @@ def newMessageEventHandler(obj):
                             return None
                         else:
                             arglist = args
-                    plugin.main().execute(vk = vk, peer = message['peer_id'], userId = userId, cmd = cmd, reply=reply, arglist=arglist, **message)
+                    plugin.main().execute(vk = vk, peer = message['peer_id'], userId = userId, cmd = cmd, reply=reply, arglist=arglist, uservk = vk_user, **message)
         

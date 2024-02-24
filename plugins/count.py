@@ -21,7 +21,7 @@ def findModer(moders, id):
 class main:
     triggers = [['daycount', 'Позволяет запустить подсчет, в случае, если автоматический не сработал']]
     perm = Perms.Admin
-    def count(self, vk : VK, peer, test = False):
+    def count(self, vk : VK, uservk: VK, peer, test = False):
         '''Подсчёт'''
         moders = db.execute("SELECT * FROM moders").fetchall()
         events = [id[0] for id in db.execute("SELECT * FROM moders WHERE event = 1").fetchall()]
@@ -31,7 +31,7 @@ class main:
         for moder in moders:#Заполняем кто сколько дней не постил. Инфа из базы
             moders_days[moder[0]] = moder[2]
 
-        posts = vk.api("wall.get", count=50, owner_id=0-config.GROUP_ID)
+        posts = uservk.api("wall.get", count=50, owner_id=0-config.GROUP_ID)
 
         ts = int(time.time())-24*60*60
 
@@ -125,7 +125,6 @@ class main:
 
             vac_end = []
             for u in dbvac:
-                print(u)
                 if u[2] == mydate:
                     vac_end.append(u[0])
             try: 
@@ -151,8 +150,8 @@ class main:
         con.commit()
         vk.api("messages.send", peer_id=peer, message=result)
 
-    def execute(self, vk : VK, **mess):
+    def execute(self, vk : VK, uservk: VK, **mess):
         if len(mess['text'].split(' ')) > 1 and mess['text'].split(' ')[1] == "test":
-            self.count(vk, mess['peer_id'], True)
+            self.count(vk, uservk, mess['peer_id'], True)
         else:
-            self.count(vk, config.PEER_ADD_NUM + config.CONVERSATIONS['new'])
+            self.count(vk, uservk, config.PEER_ADD_NUM + config.CONVERSATIONS['new'])

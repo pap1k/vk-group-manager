@@ -7,14 +7,14 @@ class main:
     triggers = [['addmoder', 'Назначает чела модером в группе и в боте. При использовании админом на самого себя может снять с него админ права в группе (так работает сам вк)'], ['delmoder', 'Снимает чела с поста модера, ивента(если он им был), снимает модерку в группе. На самом себе тоже не надо юзать']]
     target = True
     perm = Perms.Admin
-    def execute(self, vk : VK, peer, reply, **mess):
+    def execute(self, vk : VK, uservk: VK, peer, reply, **mess):
         db.execute("CREATE TABLE IF NOT EXISTS moders (vk_id INT NOT NULL, event INT DEFAULT 0, days_without_posts INT DEFAULT 0)")
 
         data = db.execute("SELECT * FROM moders WHERE vk_id = ?", (mess['userId'],)).fetchall()
         
         name = vk.api("users.get", user_ids=mess['userId'])[0]
 
-        managers = vk.api("groups.getMembers", group_id=config.GROUP_ID, filter='managers')
+        managers = uservk.api("groups.getMembers", group_id=config.GROUP_ID, filter='managers')
         found = False
         
         for manager in managers['items']:
@@ -32,16 +32,16 @@ class main:
 
                 if not isModer:
                     if not "-dev" in sys.argv:
-                        vk.api("groups.editManager", group_id=config.GROUP_ID, user_id=mess['userId'], role="editor")
+                        uservk.api("groups.editManager", group_id=config.GROUP_ID, user_id=mess['userId'], role="editor")
                     else:
                         m += "[TEST MODE]"
                     m += " и в группе"
 
-                r = vk.api("messages.addChatUser", chat_id=config.CONVERSATIONS['flood'], user_id=mess['userId'])
+                r = uservk.api("messages.addChatUser", chat_id=config.CONVERSATIONS_USER['flood'], user_id=mess['userId'])
                 if not r:
                     m += "\n Ошибка приглашения во Flood Chat"
 
-                r = vk.api("messages.addChatUser", chat_id=config.CONVERSATIONS['new'], user_id=mess['userId'])
+                r = uservk.api("messages.addChatUser", chat_id=config.CONVERSATIONS_USER['new'], user_id=mess['userId'])
                 if not r:
                     m += "\n Ошибка приглашения в New Chat"
 

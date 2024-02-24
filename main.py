@@ -15,7 +15,7 @@ def sendStartAnnounce(text):
 startinfo = "[BOT]\nЗапускается...."
 while True:
     try:
-        LP = LongPoll(config.TOKEN)
+        LP = LongPoll(config.TOKEN, config.GROUP_ID_PROD)
 
         LP.addListener('message_new', newMessageEventHandler)
 
