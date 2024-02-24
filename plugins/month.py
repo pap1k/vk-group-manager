@@ -64,7 +64,7 @@ class main:
             zp = arglist[1]*posts if zp_per_10 == 0 else zp_per_10
             if zp != 0:
                 nick = getModerNick(counter[i][0], moders)
-                reportmsg += f"{names[i]['first_name']} {names[i]['last_name']}: {posts} {getPostCase(posts)} -> {zp}$\n"
+                reportmsg += f"{names[i]['first_name']} {names[i]['last_name']}({nick}): {posts} {getPostCase(posts)} -> {zp}$\n"
                 if nick not in payments:
                     payments[nick] = zp
                 else:
@@ -92,14 +92,14 @@ class main:
             if isModerAdmin(userId, admins):
                 continue
             zp = reportTable[userId]['count'] * arglist[2]
-            reportmsg+= f"{names[c]['first_name']} {names[c]['last_name']}: {reportTable[userId]['count']} мп -> {zp}$"
+            nick = getModerNick(userId, moders)
+            reportmsg+= f"{names[c]['first_name']} {names[c]['last_name']}({nick}): {reportTable[userId]['count']} мп -> {zp}$"
             if arglist[3] != 0:
                 refill = arglist[3] - reportTable[userId]['spent']
                 if refill > 0:
                     reportmsg+= f"; докинуть {refill}$"
                     zp += refill
             if zp > 0:
-                nick = getModerNick(userId, moders)
                 if nick not in payments:
                     payments[nick] = zp
                 else:

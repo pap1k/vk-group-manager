@@ -20,7 +20,7 @@ class main:
             if newrebs < 0:
                 reply("Количество выговоров не может быть меньше 0")
                 return
-            if len(message['text'].split(' ')) > 2:
+            if len(message['text'].split(' ')) > 2 or (cmd == 'unreb' and len(message['text'].split(' ')) == 2):
                 db.execute("INSERT INTO rebs(vk_id, admin, action, date_of_reb, comment) VALUES(?,?,?,?,?)", (userId, message['from_id'], (act if act == 1 else 0), date(time.time()), ' '.join(message['text'].split(' ')[2:])))
             else:
                 return reply("/reb [id] [причина]")
