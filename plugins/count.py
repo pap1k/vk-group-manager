@@ -138,7 +138,8 @@ class main:
                 
             if len(vac_end) > 0:
                 for id in vac_end:
-                    db.execute("DELETE FROM vacation WHERE vk_id = ?", (id,))
+                    if not test:
+                        db.execute("DELETE FROM vacation WHERE vk_id = ?", (id,))
 
         result += "║ > Фильтр постов за сегодня:\n"
         result +=  "║*******************************\n"
