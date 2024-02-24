@@ -1,7 +1,7 @@
 from dotenv import load_dotenv
 load_dotenv()
 import os
-TOKEN = os.getenv("VK_TOKEN")
+TOKEN = os.getenv("VK_TOKEN_GROUP")
 USER_TOKEN=os.getenv("VK_TOKEN_USER")
 GROUP_ID_PROD = 145098987
 GROUP_ID = 145098987
