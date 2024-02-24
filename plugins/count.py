@@ -98,18 +98,17 @@ class main:
             result += f"║{name['first_name']} {name['last_name']} - {creators[name['id']]}\n"
         result +=  "║*********************************\n"
                 
-        result += "║ > Не было постов от: \n"
-        result +=  "║*********************************\n"
-
-
         not_post_ids = []
         for moder in moders_days:
             if moders_days[moder] != 0:
                 not_post_ids.append(moder)
+        if len(not_post_ids) > 0:
+            result += "║ > Не было постов от: \n"
+            result +=  "║*********************************\n"
 
-        not_post_names = vk.api("users.get", user_ids=','.join(map(str, not_post_ids)), name_case="gen")
-        for name in not_post_names:
-            result += f"║{name['first_name']} {name['last_name']} - {moders_days[name['id']]} {getDayCase(moders_days[name['id']])}\n"
+            not_post_names = vk.api("users.get", user_ids=','.join(map(str, not_post_ids)), name_case="gen")
+            for name in not_post_names:
+                result += f"║{name['first_name']} {name['last_name']} - {moders_days[name['id']]} {getDayCase(moders_days[name['id']])}\n"
 
         result +=  "║*******************************\n"
         result +=  "║ > Статистика модераторов:\n"
