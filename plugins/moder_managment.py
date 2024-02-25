@@ -57,15 +57,15 @@ class main:
                 m = f"{name['first_name']} {name['last_name']} снят с поста модера в боте"
                 if isModer:
                     if not "-dev" in sys.argv:
-                        vk.api("groups.editManager", group_id=config.GROUP_ID, user_id=mess['userId'])
+                        uservk.api("groups.editManager", group_id=config.GROUP_ID, user_id=mess['userId'])
                     else:
                         m += "[TEST MODE]"
                     m += " и в группе"
 
-                r = vk.api("messages.removeChatUser", chat_id=config.CONVERSATIONS['flood'], user_id=mess['userId'])
+                r = uservk.api("messages.removeChatUser", chat_id=config.CONVERSATIONS['flood'], user_id=mess['userId'])
                 if not r:
                     m += "\n Ошибка исключения из Flood Chat"
-                r = vk.api("messages.removeChatUser", chat_id=config.CONVERSATIONS['new'], user_id=mess['userId'])
+                r = uservk.api("messages.removeChatUser", chat_id=config.CONVERSATIONS['new'], user_id=mess['userId'])
                 if not r:
                     m += "\n Ошибка исключения из New Chat"
                 
