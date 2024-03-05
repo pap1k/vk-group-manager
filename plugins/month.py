@@ -26,7 +26,7 @@ def getModerNick(vk_id, moders):
 
 def getPostCase(num):
     if str(num)[-1] == "1": return "пост"
-    elif int(str(num)[-1]) in range(6,10) or str(num)[-1] == "0": return "постов"
+    elif int(str(num)[-1]) in range(5,10) or str(num)[-1] == "0": return "постов"
     else: return "поста"
 
 def isModerAdmin(id, admins):
