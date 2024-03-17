@@ -34,7 +34,8 @@ class main:
         vac = [id[0] for id in dbvac]
         moders_days = {}
         for moder in moders:#Заполняем кто сколько дней не постил. Инфа из базы
-            moders_days[moder[0]] = moder[2]
+            if moder[0] not in dbsuper:
+                moders_days[moder[0]] = moder[2]
 
         posts = uservk.api("wall.get", count=50, owner_id=0-config.GROUP_ID)
 
