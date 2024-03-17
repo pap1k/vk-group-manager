@@ -26,6 +26,11 @@ class main:
         moders = db.execute("SELECT * FROM moders").fetchall()
         events = [id[0] for id in db.execute("SELECT * FROM moders WHERE event = 1").fetchall()]
         dbvac = db.execute("SELECT * FROM vacation").fetchall()
+        dbsuper = db.execute("SELECT vk_id FROM moders WHERE super = 1").fetchall()
+        if len(dbsuper) > 0:
+            dbsuper = list(dbsuper[0])
+        else:
+            dbsuper = []
         vac = [id[0] for id in dbvac]
         moders_days = {}
         for moder in moders:#Заполняем кто сколько дней не постил. Инфа из базы
@@ -73,7 +78,7 @@ class main:
                             creators[post['created_by']] += 1
         
         for moder in moders_days:
-            if moder not in creators and moder not in vac and moder not in events:
+            if moder not in creators and moder not in vac and moder not in events and moder not in dbsuper:
                 moders_days[moder] += 1
                 if not test:
                     db.execute(f"UPDATE moders SET days_without_posts = {moders_days[moder]} WHERE vk_id = {moder}")
