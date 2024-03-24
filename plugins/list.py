@@ -14,6 +14,12 @@ def getnick(table, uid):
             return user[5]
     return None
 
+def getsuper(table, uid):
+    for user in table:
+        if str(user[0]) == str(uid):
+            return user[6]
+    return None
+
 class main:
     triggers = [['list', 'Показывает список всех модеров, ивентов. Показывает кто в отпуске. Показывает выговоры']]
     perm = Perms.Admin
@@ -38,8 +44,11 @@ class main:
         for user in names:
             rebs = getreb(table, user['id'])
             nick = getnick(table, user['id'])
+            sup = getsuper(table, user['id'])
             if nick == None:
                 nick = "Не указан ник"
+            if sup == 1:
+                mlist += "[S]"
             if i < len(events):
                 mlist += "[E] "
             mlist += "[id"+str(user['id'])+"|"+user['first_name'] + " " + user['last_name']+f"] ({nick}) [ВЫГОВОРЫ: " + ("(ошибка)" if rebs == -1 else str(rebs)) +"]"
