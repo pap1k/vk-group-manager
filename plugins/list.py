@@ -47,7 +47,7 @@ class main:
             sup = getsuper(table, user['id'])
             if nick == None:
                 nick = "Не указан ник"
-            if sup == 1:
+            if str(sup) == '1':
                 mlist += "[S]"
             if i < len(events):
                 mlist += "[E] "
