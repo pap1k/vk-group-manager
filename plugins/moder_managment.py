@@ -62,10 +62,10 @@ class main:
                         m += "[TEST MODE]"
                     m += " и в группе"
 
-                r = uservk.api("messages.removeChatUser", chat_id=config.CONVERSATIONS['flood'], user_id=mess['userId'])
+                r = uservk.api("messages.removeChatUser", chat_id=config.CONVERSATIONS_USER['flood'], user_id=mess['userId'])
                 if not r:
                     m += "\n Ошибка исключения из Flood Chat"
-                r = uservk.api("messages.removeChatUser", chat_id=config.CONVERSATIONS['new'], user_id=mess['userId'])
+                r = uservk.api("messages.removeChatUser", chat_id=config.CONVERSATIONS_USER['new'], user_id=mess['userId'])
                 if not r:
                     m += "\n Ошибка исключения из New Chat"
                 
