@@ -26,11 +26,11 @@ class main:
         moders = db.execute("SELECT * FROM moders").fetchall()
         events = [id[0] for id in db.execute("SELECT * FROM moders WHERE event = 1").fetchall()]
         dbvac = db.execute("SELECT * FROM vacation").fetchall()
-        dbsuper = db.execute("SELECT vk_id FROM moders WHERE super = 1").fetchall()
-        if len(dbsuper) > 0:
-            dbsuper = list(dbsuper[0])
-        else:
-            dbsuper = []
+        dbsuper_ = db.execute("SELECT vk_id FROM moders WHERE super = 1").fetchall()
+        dbsuper = []
+        if len(dbsuper_) > 0:
+            for id in dbsuper_:
+                dbsuper.append(int(list(id)[0]))
         vac = [id[0] for id in dbvac]
         moders_days = {}
         for moder in moders:#Заполняем кто сколько дней не постил. Инфа из базы
