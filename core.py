@@ -55,6 +55,7 @@ class VK:
         else: oldreq = self._queue.pop(0)
         try:
             self._lastQTS = time_ms()
+            logCore(f"Reqeusting {oldreq["URL"]}", data=oldreq["DATA"])
             r = requests.post(oldreq["URL"], data=oldreq["DATA"]).json()
         except requests.exceptions.RequestException as exc:
             logCore(f'VK API request failed: {exc}; retrying')
@@ -62,6 +63,7 @@ class VK:
             return self._do_request(oldreq)
 
         if 'error' in r:
+            logCore("Erorr in response: {r}")
             err = r['error']['error_code']
             if err == 6:
                 time.sleep(0.5)
