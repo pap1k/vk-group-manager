@@ -56,15 +56,16 @@ class VK:
         try:
             self._lastQTS = time_ms()
             r = requests.post(oldreq["URL"], data=oldreq["DATA"]).json()
-        except requests.exceptions.ConnectionError:
-            logCore('Соединение отвалилось, пробуем снова')
+        except requests.exceptions.RequestException as exc:
+            logCore(f'VK API request failed: {exc}; retrying')
+            time.sleep(0.5)
             return self._do_request(oldreq)
 
         if 'error' in r:
             err = r['error']['error_code']
             if err == 6:
                 time.sleep(0.5)
-                self._do_request(oldreq)
+                return self._do_request(oldreq)
             else:
                 logCore("An error: ", r['error']['error_msg'])
             return None 
@@ -169,7 +170,7 @@ class LongPoll:
                     elif resp['failed'] == 2 or resp['failed'] == 3:
                         self.getServerInfo()
                         continue
-                    elif resp['filed'] == 4:
+                    elif resp['failed'] == 4:
                         continue
                     else:
                         logLP("Unknown erorr")
