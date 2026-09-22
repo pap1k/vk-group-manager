@@ -5,7 +5,8 @@ from log import Log
 CORE_V = 0.3
 
 API_URL = "https://api.vk.ru/method/"
-API_V = 5.103
+# Keep this current; VK can retire older API versions.
+API_V = "5.199"
 MAX_REQUESTS_PER_SEC = 4
 REQUEST_DELAY = int(1/MAX_REQUESTS_PER_SEC*1000)
 MAX_MESSAGE_LENGTH = 4095
@@ -46,33 +47,46 @@ class VK:
         while time_ms() - self._lastQTS < REQUEST_DELAY:
             time.sleep(0.1)
 
-        #logCore(LQTS=self._lastQTS, CUR=time_ms(), DIFF=time_ms() - self._lastQTS, DELAY_WAS=time_ms()-start_wait)
-        
         return self._do_request()
 
     def _do_request(self, req = None):
-        if req: oldreq = req
-        else: oldreq = self._queue.pop(0)
-        try:
-            self._lastQTS = time_ms()
-            logCore(f"Reqeusting {oldreq['URL']}", data=oldreq["DATA"])
-            r = requests.post(oldreq["URL"], data=oldreq["DATA"]).json()
-        except requests.exceptions.RequestException as exc:
-            logCore(f'VK API request failed: {exc}; retrying')
-            time.sleep(0.5)
-            return self._do_request(oldreq)
+        oldreq = req if req is not None else self._queue.pop(0)
+        retryable_errors = {6, 9}
+        max_attempts = 6
 
-        if 'error' in r:
-            logCore(f"Erorr in response: {r}")
-            err = r['error']['error_code']
-            if err == 6:
-                time.sleep(0.5)
-                return self._do_request(oldreq)
-            else:
-                logCore("An error: ", r['error']['error_msg'])
-            return None 
-        else:
-            return r['response']
+        for attempt in range(max_attempts):
+            try:
+                self._lastQTS = time_ms()
+                logCore(f"Requesting {oldreq['URL']}", data=oldreq["DATA"])
+                response = requests.post(
+                    oldreq["URL"], data=oldreq["DATA"], timeout=(5, 30)
+                )
+                response.raise_for_status()
+                result = response.json()
+            except (requests.exceptions.RequestException, ValueError) as exc:
+                if attempt == max_attempts - 1:
+                    logCore(f"VK API request failed after retries: {exc}")
+                    return None
+                delay = min(30, 2 ** attempt)
+                logCore(f"VK API request failed; retrying in {delay}s: {exc}")
+                time.sleep(delay)
+                continue
+
+            error = result.get("error")
+            if error is None:
+                return result.get("response")
+
+            code = error.get("error_code")
+            if code not in retryable_errors or attempt == max_attempts - 1:
+                logCore(f"VK API error {code}: {error.get('error_msg')}")
+                return None
+
+            delay = float(error.get("retry_after", min(30, 2 ** attempt)))
+            delay += rand(0, 250) / 1000
+            logCore(f"VK rate limit ({code}); retrying in {delay:.2f}s")
+            time.sleep(delay)
+
+        return None
 
     def _text_split(self, text : str):
         #Делим по \n
@@ -96,7 +110,6 @@ class VK:
                 newtxt[idx] += w+' '
         return newtxt
 
-                
     def api(self, method, priority = 0, **params):
         params['access_token'] = self.token
         params['v'] = self.v
@@ -147,6 +160,8 @@ class LongPoll:
             info = self.vkInstanse.api("messages.getLongPollServer")
             self.mode = "user"
 
+        if not info:
+            raise RuntimeError("VK did not return Long Poll server data")
         self.key = info['key']
         self.ts = info['ts']
         self.server = info['server'] if "https" in info['server'] else 'https://'+info['server']
@@ -175,7 +190,7 @@ class LongPoll:
                     elif resp['failed'] == 4:
                         continue
                     else:
-                        logLP("Unknown erorr")
+                        logLP("Unknown error")
                         self.getServerInfo()
                         continue
                 if resp['ts'] != self.ts:
@@ -184,17 +199,9 @@ class LongPoll:
                     for listener in self.listeners:
                         event = upd['type'] if self.mode == "group" else userToGroupEvent(upd[0])
                         if listener[0] == event:
-                            # print('Пришло сообщение')
                             if self.mode == "user":
-                                #КОСТЫЛЬ ТОЛЬКО НА СООБЩЕНИЯ КОТОРЫЕ ЧЕРЕЗ ЮЗЕР ЛОНГПОЛЛ
-                                # try:
-                                #     mess = self.vkInstanse.api("messages.getById", message_ids=upd[1])['items'][0]
-                                # except IndexError:
-                                    # mess = self.vkInstanse.api("messages.getById", message_ids=upd[1])['items'][0]
                                 mess = None
-                                i = 0
                                 while mess == None:
-                                    i += 1
                                     items = self.vkInstanse.api("messages.getById", message_ids=upd[1])
                                     try:
                                         mess = items['items'][0]
@@ -208,7 +215,6 @@ class LongPoll:
                                         logLP(f"Проблема с обработкой сообщения листенером: {e}", isCrash=True)
                             else:
                                 listener[1](upd['object'])
-                                        
             except KeyboardInterrupt:
                 self.stop()
             except requests.exceptions.ConnectionError:
@@ -216,4 +222,4 @@ class LongPoll:
 
     def stop(self):
         logLP("Stopping LongPoll")
-        self.doFlag = False 
+        self.doFlag = False
