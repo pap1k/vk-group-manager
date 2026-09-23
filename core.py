@@ -7,8 +7,8 @@ CORE_V = 0.3
 API_URL = "https://api.vk.ru/method/"
 # Keep this current; VK can retire older API versions.
 API_V = "5.199"
-MAX_REQUESTS_PER_SEC = 4
-REQUEST_DELAY = int(1/MAX_REQUESTS_PER_SEC*1000)
+MAX_REQUESTS_PER_SEC = 3
+REQUEST_DELAY = int(1000/MAX_REQUESTS_PER_SEC) + 1
 MAX_MESSAGE_LENGTH = 4095
 
 logCore = Log("[VK API / VK]").log
@@ -51,7 +51,7 @@ class VK:
 
     def _do_request(self, req = None):
         oldreq = req if req is not None else self._queue.pop(0)
-        retryable_errors = {6, 9}
+        retryable_errors = {6}
         max_attempts = 6
 
         for attempt in range(max_attempts):
